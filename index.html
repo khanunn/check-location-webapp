@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <!-- บรรทัดนี้สำคัญมากสำหรับการแสดงผลบนมือถือ -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตรวจสอบตำแหน่ง</title>
+    
+    <!-- นี่คือส่วนของ CSS (เหมือน Inspector) ครับ -->
+    <style>
+        /* ใช้ฟอนต์ที่อ่านง่าย และจัดทุกอย่างกลางจอ */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f7f6;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box; /* ทำให้ padding ไม่ล้นจอ */
+        }
+
+        /* นี่คือ "GameObject" หรือ "Panel" หลักของเรา */
+        .container {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        /* * นี่คือ "Prefab" สถานะต่างๆ ของเรา
+         * เราจะใช้ JavaScript สั่ง .SetActive(true/false) ให้มัน
+         * โดยการเพิ่มหรือลบคลาส 'hidden'
+        */
+        .hidden {
+            display: none;
+        }
+
+        /* สไตล์ของปุ่ม (เหมือน UI Button) */
+        .button {
+            display: inline-block;
+            background-color: #007aff;
+            color: #ffffff;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        /* สไตล์ข้อความแสดงข้อผิดพลาด */
+        .error-message {
+            color: #d93025;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+
+        /* สไตล์ข้อความสถานะ (เช่น กำลังโหลด) */
+        .status-message {
+            color: #555;
+            font-size: 18px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 
+      นี่คือ "Scene" ของเราครับ
+      เรามี "Panel" 3 อัน คือ: loading, success, error
+      เราจะโชว์ทีละอันเท่านั้น 
+    -->
+    <div class="container">
+        
+        <!-- 1. สถานะกำลังโหลด (Loading State) -->
+        <div id="loading-container" class="status-message">
+            <p>กำลังตรวจสอบตำแหน่งของคุณ...</p>
+            <p>กรุณากด "Allow" หรือ "อนุญาต" เมื่อเบราว์เซอร์ถาม</p>
+        </div>
+
+        <!-- 2. สถานะสำเร็จ (Success State) - ซ่อนไว้ตอนเริ่ม -->
+        <div id="success-container" class="hidden">
+            <h2>ยินดีต้อนรับ!</h2>
+            <p>คุณอยู่ในพื้นที่ที่กำหนด</p>
+            <br>
+            <!-- 
+              !!! นี่คือปุ่มที่จะลิงก์ไป Google Form ของคุณ
+              !!! อย่าลืมเปลี่ยน 'href' นะครับ 
+            -->
+            <!-- <a id="google-form-link" href="#" class="button">
+                ไปที่ฟอร์มลงทะเบียน -->
+            <!-- <button id="google-form-button" class="button">
+                ไปที่ฟอร์มลงทะเบียน
+            </a> -->
+            <iframe id="form-iframe"
+                    src="" 
+                    frameborder="0" 
+                    scrolling="auto">
+                กำลังโหลดฟอร์ม...
+            </iframe>
+        </div>
+
+        <!-- 3. สถานะล้มเหลว (Error State) - ซ่อนไว้ตอนเริ่ม -->
+        <div id="error-container" class="hidden">
+            <h2>เข้าถึงไม่ได้</h2>
+            <p class="error-message" id="error-message">
+                <!-- ข้อความ Error จะถูกเติมโดย JavaScript -->
+            </p>
+        </div>
+
+    </div>
+
+    <!-- 
+      ===============================================
+      นี่คือส่วนของ JavaScript (เหมือน C# Script)
+      ===============================================
+    -->
+    <script>
+        // --- 1. ตั้งค่าตัวแปร (เหมือน Public Variables ใน Inspector) ---
+        // !!! ให้คุณไปที่ Google Maps, คลิกขวาที่สถานที่ของคุณ แล้วคัดลอกพิกัดมาใส่ที่นี่
+        //13.927301, 100.389257 บ้าน
+        //13.755956, 100.492430 กองอำนวยการสนามหลวง
+        //13.9214,  100.4324 ที่อยู่ localhost
+        const TARGET_LATITUDE = 13.9214;  // 
+        const TARGET_LONGITUDE = 100.4324; //
+
+
+        // รัศมีที่อนุญาต (หน่วยเป็น "เมตร")
+        // 1000 เมตร = 1 กิโลเมตร
+        const MAX_RADIUS_METERS = 500; // อนุญาตในรัศมี 500 เมตร
+
+        // !!! นี่คือการเปลี่ยนแปลงที่ 1: ตั้งค่าลิงก์ฟอร์มของคุณ
+        // !!! 1.1 ใส่ลิงก์ "viewform" ของคุณ (ก่อนเครื่องหมาย ?)
+        //https://docs.google.com/forms/d/e/1FAIpQLScb5C1ACxXbvCzbPVMJWelfCWh3vp-j25WxSVZs0x7wGDg8wg/viewform?usp=pp_url&entry.764289162=111&entry.973720237=222
+        //https://prettyform.addxt.com/a/form/vf/1FAIpQLScb5C1ACxXbvCzbPVMJWelfCWh3vp-j25WxSVZs0x7wGDg8wg?ref=link&entry.973720237=222&entry.764289162=111
+        //https://formesign.com/public/109194299722203056507/all/form/1FAIpQLScb5C1ACxXbvCzbPVMJWelfCWh3vp-j25WxSVZs0x7wGDg8wg
+
+        const GOOGLE_FORM_URL_BASE = "https://formesign.com/public/109194299722203056507/all/form/1FAIpQLScb5C1ACxXbvCzbPVMJWelfCWh3vp-j25WxSVZs0x7wGDg8wg";
+        
+        // !!! 1.2 ใส่ "Entry ID" ที่คุณได้มาจากขั้นตอน "Get pre-filled link"
+        const LATITUDE_ENTRY_ID = "entry.764289162";  // <-- !!! เปลี่ยนเป็น ID ของคุณ
+        const LONGITUDE_ENTRY_ID = "entry.973720237"; // <-- !!! เปลี่ยนเป็น ID ของคุณ
+
+        // -------------------------------------------------------------
+
+        // --- 2. เชื่อมโยงตัวแปรกับ GameObject (เหมือน GetComponent หรือ FindObject) ---
+        const loadingContainer = document.getElementById("loading-container");
+        const successContainer = document.getElementById("success-container");
+        const errorContainer = document.getElementById("error-container");
+        const errorMessageElement = document.getElementById("error-message");
+        //const formLinkElement = document.getElementById("google-form-link");
+
+        // !!! นี่คือการเปลี่ยนแปลงที่ 3: เชื่อมกับ <button> ใหม่
+        //const formButtonElement = document.getElementById("google-form-button");
+
+        // (เราเปลี่ยนจากปุ่มมาเป็น iframe)
+        const formIframeElement = document.getElementById("form-iframe");
+        
+        // --- 3. ฟังก์ชันที่ทำงานเมื่อเปิดหน้า (เหมือน Awake() หรือ Start()) ---
+        window.onload = function() {
+            // ตั้งค่าลิงก์ในปุ่ม "สำเร็จ" ก่อน
+            //formLinkElement.href = GOOGLE_FORM_URL;
+            
+            // เริ่มกระบวนการตรวจสอบตำแหน่ง
+            checkLocation();
+        };
+
+        // --- 4. ฟังก์ชันหลักในการตรวจสอบตำแหน่ง ---
+        function checkLocation() {
+            // ตรวจสอบว่าเบราว์เซอร์นี้ใช้ Geolocation ได้หรือไม่
+            if ("geolocation" in navigator) {
+                // ถ้าใช้ได้ ให้เรียกฟังก์ชัน getCurrentPosition
+                // มันจะส่งผลลัพธ์ไปที่ successCallback (ถ้าสำเร็จ) หรือ errorCallback (ถ้าล้มเหลว)
+                navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
+                    enableHighAccuracy: true});
+            } else {
+                // เบราว์เซอร์เก่าเกินไป
+                showError("เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง");
+            }
+        }
+
+        // --- 5. ฟังก์ชันเมื่อดึงตำแหน่ง "สำเร็จ" (เหมือน Coroutine Callback) ---
+        function successCallback(position) {
+            const userLatitude = position.coords.latitude;
+            const userLongitude = position.coords.longitude;
+
+            // คำนวณระยะห่าง
+            const distance = calculateDistance(
+                userLatitude, userLongitude,
+                TARGET_LATITUDE, TARGET_LONGITUDE
+            );
+
+            // ตรวจสอบว่าอยู่ในรัศมีหรือไม่
+            if (distance <= MAX_RADIUS_METERS) {
+                // อยู่ในพื้นที่
+                showSuccess(userLatitude, userLongitude);
+            } else {
+                // อยู่นอกพื้นที่
+                showError(`คุณอยู่นอกพื้นที่ที่กำหนด (ระยะห่าง: ${distance.toFixed(0)} เมตร)`);
+            }
+        }
+
+        // --- 6. ฟังก์ชันเมื่อดึงตำแหน่ง "ล้มเหลว" ---
+        function errorCallback(error) {
+            let message = "";
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    message = "คุณปฏิเสธการเข้าถึงตำแหน่ง กรุณาอนุญาตเพื่อใช้งาน";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message = "ไม่สามารถระบุตำแหน่งของคุณได้ในขณะนี้";
+                    break;
+                case error.TIMEOUT:
+                    message = "หมดเวลาในการค้นหาตำแหน่ง";
+                    break;
+                default:
+                    message = "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ";
+                    break;
+            }
+            showError(message);
+        }
+
+        // --- 7. ฟังก์ชันสำหรับ "สลับ Scene" (เหมือน .SetActive()) ---
+        function showSuccess(userLatitude, userLongitude) {
+            loadingContainer.classList.add("hidden");
+            errorContainer.classList.add("hidden");
+            successContainer.classList.remove("hidden");
+
+            /* // 3.1 สร้างลิงก์ Pre-filled แบบไดนามิก
+            const prefilledUrl = `${GOOGLE_FORM_URL_BASE}?${LATITUDE_ENTRY_ID}=${userLatitude}&${LONGITUDE_ENTRY_ID}=${userLongitude}`;
+
+            // 3.2 เพิ่ม Event Listener ให้ปุ่ม
+            formButtonElement.addEventListener("click", function() {
+                // 3.3 สั่งให้เบราว์เซอร์ไปที่ลิงก์ที่มีพิกัดแนบไป
+                window.location.replace(prefilledUrl);
+            }); */
+    
+            // 3.1 สร้างลิงก์แบบมีพารามิเตอร์ (เผื่อฟอร์มคุณอ่านค่าได้)
+            // จะได้เป็น https://formesign.com/?lat=13.73&lng=100.52
+            //const formUrlWithParams = `${FORM_BASE_URL}?lat=${userLatitude}&lng=${userLongitude}`;
+            const prefilledUrl = `${GOOGLE_FORM_URL_BASE}?${LATITUDE_ENTRY_ID}=${userLatitude}&${LONGITUDE_ENTRY_ID}=${userLongitude}`;
+
+            // 3.2 ตั้งค่า src ของ iframe ให้โหลดฟอร์ม
+            formIframeElement.src = prefilledUrl;
+        }
+
+        function showError(message) {
+            errorMessageElement.textContent = message; // ใส่ข้อความ Error
+            loadingContainer.classList.add("hidden"); // ซ่อน "กำลังโหลด"
+            successContainer.classList.add("hidden"); // ซ่อน "สำเร็จ"
+            errorContainer.classList.remove("hidden"); // แสดง "Error"
+        }
+
+        // --- 8. ฟังก์ชันยูทิลิตี้ (Utility Function) ---
+        // นี่คือสูตรคณิตศาสตร์ (Haversine formula) สำหรับคำนวณระยะห่างระหว่างจุด 2 จุดบนโลก
+        // (คุณไม่ต้องเข้าใจมันก็ได้ แค่รู้ว่ามันทำงานได้ครับ 555)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371e3; // รัศมีโลก (เมตร)
+            const phi1 = lat1 * Math.PI / 180;
+            const phi2 = lat2 * Math.PI / 180;
+            const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+            const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+            const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                      Math.cos(phi1) * Math.cos(phi2) *
+                      Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            
+            return R * c; // ระยะห่าง (เมตร)
+        }
+
+        // --- 9. ฟังก์ชันป้องกันการคัดลอก (Deterrents) ---
+        // !!! นี่คือการเปลี่ยนแปลงที่ 5: บล็อกการคลิกขวา
+        window.addEventListener("contextmenu", function(e) {
+            // ป้องกันไม่ให้เมนูคลิกขวาแสดงขึ้นมา
+            e.preventDefault();
+        }, false);
+    </script>
+</body>
+</html>
