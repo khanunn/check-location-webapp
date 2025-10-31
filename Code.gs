@@ -1,98 +1,161 @@
-// !!! นี่คือสคริปต์สำหรับ "Google Sheet" (ที่รับข้อมูลจาก Form)
-
-// --- 1. ตั้งค่าตัวแปร (ต้องตรงกับไฟล์ HTML) ---
-const TARGET_LATITUDE = 13.736717;
-const TARGET_LONGITUDE = 100.523186;
+//13.927301, 100.389257 บ้าน
+//13.755956, 100.492430 กองอำนวยการสนามหลวง
+//13.8766,  100.4044 ที่อยู่ localhost
+const TARGET_LATITUDE = 13.755956;
+const TARGET_LONGITUDE = 100.49243;
 const MAX_RADIUS_METERS = 500;
 
-// !!! 1.1 ตั้งค่าคอลัมน์ใน Google Sheet (สำคัญมาก!)
-// A=1, B=2, C=3...
-// สมมติว่าคำถาม Latitude, Longitude, IP Address อยู่ในคอลัมน์ C, D, E
-const ipColumnIndex = 5; // <-- !!! (ตัวอย่าง: คอลัมน์ E) เปลี่ยนเลขคอลัมน์นี้ให้ตรงกับ IP Address
-const verificationColumnIndex = 6; // <-- !!! (ตัวอย่าง: คอลัมน์ F) คอลัมน์สำหรับแสดงผลลัพธ์
+const ipColumnIndex = 14;
+const phoneColumnIndex = 4;
+const nameColumnIndex = 3;
+const verificationColumnIndex = 15;
 
 /**
  * @param {GoogleAppsScript.Events.SheetsOnFormSubmit} e
  */
 function onFormSubmit(e) {
+  // --- [เพิ่ม Logger] ---
+  console.log("--- เริ่มการทำงาน onFormSubmit ---");
+
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const row = e.range.getRow(); 
+  const row = e.range.getRow();
   let verificationStatus = "ไม่ทราบสถานะ";
 
+  // ตั้งค่า Timezone เป็น "Asia/Bangkok" (GMT+7)
+  const timezone = "Asia/Bangkok";
+  const today = Utilities.formatDate(new Date(), timezone, "yyyy-MM-dd");
+
+  // --- [เพิ่ม Logger] ---
+  console.log(`แถวที่: ${row}, วันที่ปัจจุบัน (Today): ${today}`);
+
   if (!e || !e.namedValues) {
-    Logger.log("สคริปต์ถูกรันโดยไม่มีข้อมูล");
+    console.log(
+      "!!! Error: สคริปต์ถูกรันโดยไม่มีข้อมูล (e.namedValues is null)"
+    );
     return;
   }
 
-  // ดึงค่าที่ส่งมา
-  // *** ชื่อ 'Latitude', 'Longitude', 'IP Address' ต้องตรงกับ "ชื่อคำถาม" ใน Google Form ***
-  const submittedLat = e.namedValues['Latitude'] ? e.namedValues['Latitude'][0] : null;
-  const submittedLong = e.namedValues['Longitude'] ? e.namedValues['Longitude'][0] : null;
-  const submittedIP = e.namedValues['IP Address'] ? e.namedValues['IP Address'][0] : null;
+  // --- ดึงค่าที่ส่งมา ---
+  const submittedLat = e.namedValues["Latitude"]
+    ? e.namedValues["Latitude"][0]
+    : null;
+  const submittedLong = e.namedValues["Longitude"]
+    ? e.namedValues["Longitude"][0]
+    : null;
+  const submittedIP = e.namedValues["IP Address"]
+    ? e.namedValues["IP Address"][0]
+    : null;
+  const submittedPhone = e.namedValues["หมายเลขโทรศัพท์"]
+    ? e.namedValues["หมายเลขโทรศัพท์"][0]
+    : null;
+  const submittedName = e.namedValues["ชื่อ-สกุล"]
+    ? e.namedValues["ชื่อ-สกุล"][0]
+    : null;
 
-  // --- 1. ตรวจสอบ IP ซ้ำก่อน (ป้องกันการโกง) ---
-  if (submittedIP) {
-    // ดึงค่า IP ทั้งหมดที่เคยส่งมาก่อน
-    // (ตั้งแต่แถวที่ 2 จนถึงแถวก่อนหน้า)
-    const lastRow = row - 1; 
-    if (lastRow > 1) { // ถ้ามีข้อมูลเก่าให้ตรวจสอบ
-      // getRange(แถวเริ่มต้น, คอลัมน์, จำนวนแถว, จำนวนคอลัมน์)
-      // เราจะดึงข้อมูลตั้งแต่แถวที่ 2 (แถวแรกคือหัวข้อ) จนถึงแถวก่อนหน้า (lastRow)
-      const ipRange = sheet.getRange(2, ipColumnIndex, lastRow - 1, 1).getValues(); 
-      
-      const isIPDuplicate = ipRange.some(ipArray => ipArray[0] === submittedIP);
+  // --- [เพิ่ม Logger] ---
+  console.log(`IP ที่ส่งมา: ${submittedIP}, เบอร์ที่ส่งมา: ${submittedPhone}`);
 
-      if (isIPDuplicate) {
-        verificationStatus = `❌ IP ซ้ำ (${submittedIP})`;
-        sheet.getRange(row, verificationColumnIndex).setValue(verificationStatus);
-        Logger.log(`IP ซ้ำ: ${submittedIP} ในแถวที่ ${row}`);
-        return; // หยุดการทำงานถ้า IP ซ้ำ
+  // --- 1. ตรวจสอบว่ามีข้อมูลหลัก (IP/พิกัด) หรือไม่ ---
+  if (!submittedIP || !submittedLat || !submittedLong) {
+    verificationStatus = "❌ โกง (ไม่มี IP/พิกัด)";
+    sheet.getRange(row, verificationColumnIndex).setValue(verificationStatus);
+    console.log(`!!! Error: ข้อมูลหลักไม่ครบ (IP/Lat/Lng)`);
+    return;
+  }
+
+  // --- 2. ตรวจสอบ IP ซ้ำ (เฉพาะวันนี้) ---
+  const lastRow = row - 1;
+  if (lastRow > 1) {
+    console.log(`เริ่มตรวจสอบข้อมูลเก่า (แถว 2 ถึง ${lastRow})`);
+    const dataRange = sheet
+      .getRange(2, 1, lastRow - 1, sheet.getLastColumn())
+      .getValues();
+
+    const todaysEntries = dataRange.filter((entryRow) => {
+      const entryTimestamp = entryRow[0]; // คอลัมน์แรก (index 0) คือ Timestamp
+
+      // --- [เพิ่ม Logger] ---
+      // console.log(` - (แถวเก่า) Timestamp ดิบ: ${entryTimestamp}, ประเภท: ${typeof entryTimestamp}`);
+
+      const entryDate = Utilities.formatDate(
+        entryTimestamp,
+        timezone,
+        "yyyy-MM-dd"
+      );
+
+      // --- [เพิ่ม Logger] ---
+      // (เปิดใช้อันนี้ถ้าต้องการดูทุกแถวที่มันกรอง)
+      // console.log(`   - (แถวเก่า) entryDate: ${entryDate} | today: ${today} | IsMatch: ${entryDate === today}`);
+
+      return entryDate === today;
+    });
+
+    console.log(`พบ ${todaysEntries.length} รายการที่ตรงกับ "วันนี้"`);
+
+    const duplicateEntry = todaysEntries.find((entryRow) => {
+      const entryIP = entryRow[ipColumnIndex - 1];
+      // console.log(`   - กำลังเทียบ IP: ${entryIP} (เก่า) vs ${submittedIP} (ใหม่)`);
+      return entryIP === submittedIP;
+    });
+
+    if (duplicateEntry) {
+      console.log(`!!! พบ IP ซ้ำในวันนี้ !!!`);
+      const duplicatePhone = duplicateEntry[phoneColumnIndex - 1];
+      const duplicateName = duplicateEntry[nameColumnIndex - 1] || "ไม่พบชื่อ";
+      console.log(
+        `  - เบอร์ที่ซ้ำ: ${duplicatePhone}, ชื่อที่ซ้ำ: ${duplicateName}`
+      );
+
+      if (duplicatePhone === submittedPhone) {
+        verificationStatus = `❌ IP ซ้ำ (ตัวเอง)`;
+      } else {
+        verificationStatus = `❌ IP ซ้ำ (${duplicateName})`;
       }
-    }
-  } else {
-     // ถ้าไม่มี IP ส่งมาเลย (แสดงว่าพยายามเข้า Form เปล่าๆ)
-     verificationStatus = "❌ โกง (ไม่มี IP/พิกัด)";
-     sheet.getRange(row, verificationColumnIndex).setValue(verificationStatus);
-     Logger.log(`ไม่มี IP หรือพิกัดในแถวที่ ${row}`);
-     return;
-  }
-  
-  // --- 2. ตรวจสอบพิกัด (ถ้า IP ไม่ซ้ำ) ---
-  if (!submittedLat || !submittedLong) {
-    verificationStatus = "❌ โกง (ไม่มีพิกัด)";
-  } else {
-    // คำนวณระยะห่าง
-    const distance = calculateDistance(
-      parseFloat(submittedLat), 
-      parseFloat(submittedLong), 
-      TARGET_LATITUDE, 
-      TARGET_LONGITUDE
-    );
 
-    if (distance <= MAX_RADIUS_METERS) {
-      verificationStatus = `✅ ยืนยันแล้ว (IP: ${submittedIP})`;
+      sheet.getRange(row, verificationColumnIndex).setValue(verificationStatus);
+      console.log(`จบการทำงาน: ${verificationStatus}`);
+      return;
     } else {
-      verificationStatus = `❌ นอกพื้นที่ (ระยะห่าง ${distance.toFixed(0)} ม.)`;
+      console.log(`ไม่พบ IP ซ้ำในวันนี้`);
     }
   }
 
-  // เขียนผลลัพธ์สุดท้าย
+  // --- 3. ตรวจสอบพิกัด (ถ้า IP ไม่ซ้ำในวันนี้) ---
+  console.log(`กำลังตรวจสอบพิกัด...`);
+  const distance = calculateDistance(
+    parseFloat(submittedLat),
+    parseFloat(submittedLong),
+    TARGET_LATITUDE,
+    TARGET_LONGITUDE
+  );
+
+  if (distance <= MAX_RADIUS_METERS) {
+    verificationStatus = `✅ ยืนยืนแล้ว (IP: ${submittedIP})`;
+  } else {
+    verificationStatus = `❌ นอกพื้นที่ (ระยะห่าง ${distance.toFixed(0)} ม.)`;
+  }
+
+  console.log(`ผลการตรวจสอบพิกัด: ${verificationStatus}`);
   sheet.getRange(row, verificationColumnIndex).setValue(verificationStatus);
+  console.log("--- จบการทำงาน onFormSubmit ---");
 }
 
 // --- 8. ฟังก์ชันยูทิลิตี้ (Haversine formula) ---
 function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371e3; // รัศมีโลก (เมตร)
-  const phi1 = lat1 * Math.PI / 180;
-  const phi2 = lat2 * Math.PI / 180;
-  const deltaPhi = (lat2 - lat1) * Math.PI / 180;
-  const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+  // (โค้ดส่วนนี้เหมือนเดิม)
+  const R = 6371e3;
+  const phi1 = (lat1 * Math.PI) / 180;
+  const phi2 = (lat2 * Math.PI) / 180;
+  const deltaPhi = ((lat2 - lat1) * Math.PI) / 180;
+  const deltaLambda = ((lon2 - lon1) * Math.PI) / 180;
 
-  const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
-            Math.cos(phi1) * Math.cos(phi2) *
-            Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+  const a =
+    Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+    Math.cos(phi1) *
+      Math.cos(phi2) *
+      Math.sin(deltaLambda / 2) *
+      Math.sin(deltaLambda / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  
-  return R * c; // ระยะห่าง (เมตร)
-}
 
+  return R * c;
+}
