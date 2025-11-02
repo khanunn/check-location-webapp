@@ -5,10 +5,11 @@ const TARGET_LATITUDE = 13.755956;
 const TARGET_LONGITUDE = 100.49243;
 const MAX_RADIUS_METERS = 500;
 
+const deviceIdColumnIndex = 15;
 const ipColumnIndex = 14;
 const phoneColumnIndex = 4;
 const nameColumnIndex = 3;
-const verificationColumnIndex = 15;
+const verificationColumnIndex = 16;
 
 /**
  * @param {GoogleAppsScript.Events.SheetsOnFormSubmit} e
@@ -45,6 +46,10 @@ function onFormSubmit(e) {
   const submittedIP = e.namedValues["IP Address"]
     ? e.namedValues["IP Address"][0]
     : null;
+  const submittedDeviceId = e.namedValues["Device ID"]
+    ? e.namedValues["Device ID"][0]
+    : null;
+  // ค่าเอาไว้เช็คที่ตรงกับใน google form
   const submittedPhone = e.namedValues["หมายเลขโทรศัพท์"]
     ? e.namedValues["หมายเลขโทรศัพท์"][0]
     : null;
@@ -53,13 +58,12 @@ function onFormSubmit(e) {
     : null;
 
   // --- [เพิ่ม Logger] ---
-  console.log(`IP ที่ส่งมา: ${submittedIP}, เบอร์ที่ส่งมา: ${submittedPhone}`);
+  //console.log(`IP ที่ส่งมา: ${submittedIP}, เบอร์ที่ส่งมา: ${submittedPhone}`);
 
   // --- 1. ตรวจสอบว่ามีข้อมูลหลัก (IP/พิกัด) หรือไม่ ---
-  if (!submittedIP || !submittedLat || !submittedLong) {
-    verificationStatus = "❌ โกง (ไม่มี IP/พิกัด)";
+  if (!IsCompleteInfomation) {
     sheet.getRange(row, verificationColumnIndex).setValue(verificationStatus);
-    console.log(`!!! Error: ข้อมูลหลักไม่ครบ (IP/Lat/Lng)`);
+    console.log(`!!! Error: ข้อมูลหลักไม่ครบ ${verificationStatus}`);
     return;
   }
 
@@ -91,6 +95,23 @@ function onFormSubmit(e) {
     });
 
     console.log(`พบ ${todaysEntries.length} รายการที่ตรงกับ "วันนี้"`);
+
+    // --- ตรวจสอบชั้นที่ 1: Device ID ซ้ำหรือไม่ (สำคัญที่สุด) ---
+    const duplicateDeviceEntry = todaysEntries.find((entryRow) => {
+      const entryDeviceID = entryRow[deviceIdColumnIndex - 1];
+      return entryDeviceID === submittedDeviceId;
+    });
+
+    if (duplicateDeviceEntry) {
+      console.log(`!!! พบ Device ID ซ้ำในวันนี้ !!!`);
+      const duplicateName =
+        duplicateDeviceEntry[nameColumnIndex - 1] || "ไม่พบชื่อ";
+      verificationStatus = `❌ ใช้เครื่องเดียวกันกับ (${duplicateName})`;
+
+      sheet.getRange(row, verificationColumnIndex).setValue(verificationStatus);
+      console.log(`จบการทำงาน: ${verificationStatus}`);
+      return; // ออกจากฟังก์ชันทันที
+    }
 
     const duplicateEntry = todaysEntries.find((entryRow) => {
       const entryIP = entryRow[ipColumnIndex - 1];
@@ -158,4 +179,17 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
   return R * c;
+}
+
+function IsCompleteInfomation() {
+  if (!submittedIP) {
+    verificationStatus = "❌ ไม่มี IP Address";
+    return false;
+  } else if (!submittedLat || !submittedLong) {
+    verificationStatus = "❌ ไม่มีพิกัดตำแหน่ง";
+    return false;
+  } else if (!submittedDeviceId) {
+    verificationStatus = "❌ ไม่มี Device ID";
+    return false;
+  } else return true;
 }
