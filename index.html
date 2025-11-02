@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ตรวจสอบตำแหน่ง</title>
-    
+
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -18,14 +19,16 @@
             padding: 0px;
             box-sizing: border-box;
         }
-        
+
         /* สไตล์หลักของ container: ใช้สำหรับหน้า Loading/Prompt */
         .container {
             background-color: #ffffff;
-            padding: 2rem; /* Initial padding for the centered card look */
+            padding: 2rem;
+            /* Initial padding for the centered card look */
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            max-width: 500px; /* จำกัดความกว้างเริ่มต้นเป็นกล่องเล็กๆ */
+            max-width: 500px;
+            /* จำกัดความกว้างเริ่มต้นเป็นกล่องเล็กๆ */
             width: 90%;
             /* เพิ่ม transition เพื่อให้การขยายดูนุ่มนวล */
             transition: max-width 0.5s ease-in-out, padding 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
@@ -33,15 +36,20 @@
 
         /* !!! สไตล์ที่จะใช้เมื่อ iframe ถูกแสดง (จะถูกเพิ่มด้วย JS) !!! */
         .full-iframe-view {
-            max-width: 1500px; /* ขยายความกว้างสูงสุดบนจอใหญ่ */
-            width: 95%; /* กว้างขึ้นบนทุกอุปกรณ์ */
-            padding: 1rem; /* ลด padding ลงเพื่อให้ iframe มีพื้นที่มากขึ้น */
-            box-shadow: none; /* ลบเงาออกเพื่อให้ดูเหมือนเป็นส่วนหนึ่งของพื้นหลัง */
+            max-width: 1500px;
+            /* ขยายความกว้างสูงสุดบนจอใหญ่ */
+            width: 95%;
+            /* กว้างขึ้นบนทุกอุปกรณ์ */
+            padding: 1rem;
+            /* ลด padding ลงเพื่อให้ iframe มีพื้นที่มากขึ้น */
+            box-shadow: none;
+            /* ลบเงาออกเพื่อให้ดูเหมือนเป็นส่วนหนึ่งของพื้นหลัง */
         }
-        
+
         .hidden {
             display: none;
         }
+
         .button {
             display: inline-block;
             background-color: #007aff;
@@ -55,11 +63,18 @@
             border: none;
             cursor: pointer;
         }
+
+        .button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
         .error-message {
             color: #d93025;
             font-weight: 500;
             margin-top: 1rem;
         }
+
         .status-message {
             color: #555;
             font-size: 18px;
@@ -69,7 +84,8 @@
         /* สไตล์สำหรับ iframe */
         #form-iframe {
             width: 100%;
-            height: 90vh; /* เพิ่มความสูงเป็น 85% ของความสูงหน้าจอ */
+            height: 90vh;
+            /* เพิ่มความสูงเป็น 85% ของความสูงหน้าจอ */
             border: 0px solid #ccc;
             border-radius: 0px;
             margin-top: 0rem;
@@ -81,11 +97,12 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- เปลี่ยนไปใช้ querySelector ใน JS เพื่ออ้างอิงถึงตัวนี้ -->
-    <div class="container"> 
-        
+    <div class="container">
+
         <!-- 1. สถานะกำลังโหลด (Loading State) -->
         <div id="loading-container" class="status-message">
             <p>กำลังตรวจสอบตำแหน่งของคุณ...</p>
@@ -94,23 +111,19 @@
 
         <!-- 2. สถานะสำเร็จ (Success State) - ซ่อนไว้ตอนเริ่ม -->
         <div id="success-container" class="hidden">
-            
+
             <!-- Part 1: Prompt (แสดงตอนแรก) -->
             <div id="success-prompt">
                 <h2>ยินดีต้อนรับ!</h2>
                 <p>คุณอยู่ในพื้นที่ที่กำหนด</p>
                 <br>
-                <button id="google-form-button" class="button">
-                    ไปที่ฟอร์มลงทะเบียน
+                <button id="google-form-button" class="button" disabled>
+                    กำลังดึงข้อมูล...
                 </button>
             </div>
-            
+
             <!-- Part 2: Iframe (ซ่อนไว้ตอนแรก) -->
-            <iframe id="form-iframe" 
-                    class="hidden" 
-                    src="" 
-                    frameborder="0" 
-                    scrolling="auto">
+            <iframe id="form-iframe" class="hidden" src="" frameborder="0" scrolling="auto">
                 กำลังโหลดฟอร์ม...
             </iframe>
         </div>
@@ -129,7 +142,7 @@
         // --- 1. ตั้งค่าตัวแปร ---
         //13.927301, 100.389257 บ้าน
         //13.755956, 100.492430 กองอำนวยการสนามหลวง
-        //13.9214,  100.4324 ที่อยู่ localhost
+        //13.8766,  100.4044 ที่อยู่ localhost
         const TARGET_LATITUDE = 13.755956;  // 
         const TARGET_LONGITUDE = 100.492430; //
         const MAX_RADIUS_METERS = 500;
@@ -138,11 +151,12 @@
         const FORM_BASE_URL = "https://formesign.com/public/109194299722203056507/all/form/1FAIpQLScb5C1ACxXbvCzbPVMJWelfCWh3vp-j25WxSVZs0x7wGDg8wg"; // <-- !!! ใส่ URL ฟอร์มจริงของคุณ
         const LATITUDE_ENTRY_ID = "entry.764289162";
         const LONGITUDE_ENTRY_ID = "entry.973720237";
+        const IP_ADDRESS_ENTRY_ID = "entry.108870544"; // <-- !!! ใส่ Entry ID สำหรับ IP Address ถ้ามี
 
         // -------------------------------------------------------------
 
-        // --- 2. เชื่อมโยงตัวแปรกับ GameObject ---
-        const mainContainer = document.querySelector(".container"); // !!! เพิ่มการอ้างอิงถึง container หลัก !!!
+// --- 2. เชื่อมโยงตัวแปรกับ GameObject ---
+        const mainContainer = document.querySelector(".container");
         const loadingContainer = document.getElementById("loading-container");
         const successContainer = document.getElementById("success-container");
         const errorContainer = document.getElementById("error-container");
@@ -150,8 +164,12 @@
         const formIframeElement = document.getElementById("form-iframe");
         const successPrompt = document.getElementById("success-prompt");
         const googleFormButton = document.getElementById("google-form-button");
+        const successMessageElement = document.getElementById("success-message");
         
-        // --- 3. ฟังก์ชันที่ทำงานเมื่อเปิดหน้า (Awake() หรือ Start()) ---
+        let userIP = null; // ตัวแปรสำหรับเก็บ IP
+        let userLocation = null; // ตัวแปรสำหรับเก็บพิกัด
+
+        // --- 3. ฟังก์ชันที่ทำงานเมื่อเปิดหน้า ---
         window.onload = function() {
             checkLocation();
         };
@@ -166,26 +184,54 @@
                 showError("เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง");
             }
         }
+        
+        // --- 4.1 ฟังก์ชันดึง IP Address (ทำงานหลังจากได้พิกัด) ---
+        async function fetchIPAddress() {
+            try {
+                // เราจะใช้ api.ipify.org เพราะมันง่ายและฟรี
+                const response = await fetch('https://api.ipify.org?format=json');
+                if (!response.ok) throw new Error('Network response was not ok.');
+                const data = await response.json();
+                userIP = data.ip;
+                checkDataAndEnableButton(); // เมื่อได้ IP แล้ว ให้ตรวจสอบ
+            } catch (error) {
+                console.error("Fetch IP Error:", error);
+                // ถ้าดึง IP ไม่ได้ เราจะไม่ให้ไปต่อ
+                showError("ไม่สามารถดึงข้อมูล IP ของคุณได้ กรุณารีเฟรช");
+            }
+        }
 
         // --- 5. ฟังก์ชันเมื่อดึงตำแหน่ง "สำเร็จ" ---
         function successCallback(position) {
-            const userLatitude = position.coords.latitude;
-            const userLongitude = position.coords.longitude;
+            userLocation = position.coords; // เก็บพิกัด
 
             const distance = calculateDistance(
-                userLatitude, userLongitude,
+                userLocation.latitude, userLocation.longitude,
                 TARGET_LATITUDE, TARGET_LONGITUDE
             );
 
             if (distance <= MAX_RADIUS_METERS) {
-                showSuccess(userLatitude, userLongitude);
+                // ถ้าพิกัดผ่าน ให้ไปดึง IP ต่อ
+                showSuccess(); 
+                fetchIPAddress(); // เริ่มดึง IP Address
             } else {
                 showError(`คุณอยู่นอกพื้นที่ที่กำหนด (ระยะห่าง: ${distance.toFixed(0)} เมตร)`);
             }
         }
+        
+        // --- 5.1 ฟังก์ชันตรวจสอบว่าได้ข้อมูลครบ (พิกัด + IP) หรือยัง ---
+        function checkDataAndEnableButton() {
+            if (userLocation && userIP) {
+                // ถ้าได้ครบทั้ง 2 อย่าง ให้เปลี่ยนปุ่มเป็น "พร้อมใช้งาน"
+                googleFormButton.textContent = "ไปที่ฟอร์มลงทะเบียน";
+                googleFormButton.disabled = false;
+            }
+        }
+
 
         // --- 6. ฟังก์ชันเมื่อดึงตำแหน่ง "ล้มเหลว" ---
         function errorCallback(error) {
+            // (โค้ดส่วนนี้เหมือนเดิม)
             let message = "";
             switch (error.code) {
                 case error.PERMISSION_DENIED:
@@ -205,17 +251,22 @@
         }
 
         // --- 7. ฟังก์ชันสำหรับ "สลับ Scene" ---
-        function showSuccess(userLatitude, userLongitude) {
+        function showSuccess() {
             loadingContainer.classList.add("hidden"); 
             errorContainer.classList.add("hidden");   
             successContainer.classList.remove("hidden"); 
 
-            // สร้างลิงก์แบบมีพารามิเตอร์ (เผื่อฟอร์มคุณอ่านค่าได้)
-            const formUrlWithParams = `${FORM_BASE_URL}?${LATITUDE_ENTRY_ID}=${userLatitude}&${LONGITUDE_ENTRY_ID}=${userLongitude}`;
-
-            // เพิ่ม listener ให้ปุ่ม
+            // เพิ่ม listener ให้ปุ่ม (ปุ่มจะยังกดไม่ได้จนกว่าจะได้ IP)
             googleFormButton.addEventListener("click", function() {
-                // !!! เพิ่มคลาสนี้เพื่อขยาย Container ให้ใหญ่ขึ้น !!!
+                // ถ้าปุ่มยังไม่พร้อม (เผื่อมีคนพยายามคลิก)
+                if (!userLocation || !userIP) {
+                    return; 
+                }
+
+                // สร้างลิงก์ Pre-filled ที่มีครบ 3 อย่าง
+                const formUrlWithParams = `${FORM_BASE_URL}?${LATITUDE_ENTRY_ID}=${userLocation.latitude}&${LONGITUDE_ENTRY_ID}=${userLocation.longitude}&${IP_ADDRESS_ENTRY_ID}=${userIP}`;
+
+                // ขยาย Container
                 mainContainer.classList.add("full-iframe-view"); 
                 
                 // ซ่อนข้อความและปุ่ม
@@ -238,7 +289,8 @@
 
         // --- 8. ฟังก์ชันยูทิลิตี้ (Haversine formula) ---
         function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371e3; // รัศมีโลก (เมตร)
+            // (โค้ดส่วนนี้เหมือนเดิม)
+            const R = 6371e3;
             const phi1 = lat1 * Math.PI / 180;
             const phi2 = lat2 * Math.PI / 180;
             const deltaPhi = (lat2 - lat1) * Math.PI / 180;
@@ -249,7 +301,7 @@
                         Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             
-            return R * c; // ระยะห่าง (เมตร)
+            return R * c;
         }
 
         // --- 9. ฟังก์ชันป้องกันการคัดลอก (Deterrents) ---
