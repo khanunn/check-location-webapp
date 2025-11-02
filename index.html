@@ -78,6 +78,12 @@
             margin-top: 1rem;
         }
 
+        .complete-message {
+            color: #34a853;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+
         .status-message {
             color: #555;
             font-size: 18px;
@@ -139,6 +145,13 @@
                 <!-- ข้อความ Error จะถูกเติมโดย JavaScript -->
             </p>
         </div>
+        
+        
+        <!-- 4. สถานะลงทะเบียนเสร็จสิ้น (Complete State) - ซ่อนไว้ตอนเริ่ม -->
+        <div id ="complete-container" class = "hidden">
+            <h2>ขอบคุณสำหรับการลงทะเบียน!</h2>
+            <p class="complete-message" id="complete-message"> </p>
+        </div>
 
     </div>
 
@@ -152,6 +165,7 @@
         const MAX_RADIUS_METERS = 500;
 
         // !!! 1.1 ใส่ลิงก์ "formesign" ของคุณ
+        const FORM_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwEUT5Pk1H-NdeyTSH1VTn-n7Odh7eY7OOejoIYTjFp55Gr4M1LgDkPO3QcKEykLhJI/exec";
         const FORM_BASE_URL = "https://formesign.com/public/109194299722203056507/all/form/1FAIpQLScb5C1ACxXbvCzbPVMJWelfCWh3vp-j25WxSVZs0x7wGDg8wg"; // <-- !!! ใส่ URL ฟอร์มจริงของคุณ
         const LATITUDE_ENTRY_ID = "entry.764289162";
         const LONGITUDE_ENTRY_ID = "entry.973720237";
@@ -166,7 +180,9 @@
         const loadingText = document.getElementById("loading-text");
         const successContainer = document.getElementById("success-container");
         const errorContainer = document.getElementById("error-container");
+        const completeContainer = document.getElementById("complete-container");
         const errorMessageElement = document.getElementById("error-message");
+        const completeMessageElement = document.getElementById("complete-message");
         const formIframeElement = document.getElementById("form-iframe");
         const successPrompt = document.getElementById("success-prompt");
         const googleFormButton = document.getElementById("google-form-button");
@@ -240,6 +256,12 @@
                 return;
             }
 
+            if(!await CheckPermissionDeviceId(deviceId))
+            {
+                return; // หยุดการทำงานถ้าไม่ผ่านการตรวจสอบ
+            }
+
+            ShowLoadingMessage("กำลังคำนวณระยะทาง...");
             const distance = CalculateDistance
             (
                 userLocation.latitude, userLocation.longitude,
@@ -288,7 +310,8 @@
         // --- 7. ฟังก์ชันสำหรับ "สลับ Scene" ---
         function ShowSuccess() {
             loadingContainer.classList.add("hidden"); 
-            errorContainer.classList.add("hidden");   
+            errorContainer.classList.add("hidden");
+            completeContainer.classList.add("hidden");
             successContainer.classList.remove("hidden"); 
 
             // เพิ่ม listener ให้ปุ่ม (ปุ่มจะยังกดไม่ได้จนกว่าจะได้ IP)
@@ -324,7 +347,16 @@
             errorMessageElement.textContent = message;
             loadingContainer.classList.add("hidden");
             successContainer.classList.add("hidden");
+            completeContainer.classList.add("hidden");
             errorContainer.classList.remove("hidden");
+        }
+
+        function ShowComplete(message) {
+            completeMessageElement.textContent = message;
+            loadingContainer.classList.add("hidden");
+            successContainer.classList.add("hidden");
+            errorContainer.classList.add("hidden");
+            completeContainer.classList.remove("hidden");
         }
 
         // --- 8. ฟังก์ชันยูทิลิตี้ (Haversine formula) ---
@@ -342,6 +374,44 @@
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             
             return R * c;
+        }
+
+        async function CheckPermissionDeviceId(deviceId) 
+        {
+            try
+            {
+                ShowLoadingMessage("กำลังตรวจสอบสิทธิ์การใช้งาน...");
+                
+                const checkUrl = `${FORM_SCRIPT_WEB_APP_URL}?deviceId=${deviceId}`;
+                console.log("Checking URL:", checkUrl);
+
+                const response = await fetch(checkUrl);
+                if (!response.ok) throw new Error('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ตรวจสอบได้');
+                
+                const data = await response.json();
+                console.log("API Response:", data);
+
+                // 3. ตรวจสอบผลลัพธ์จาก API
+                if (data.status === 'blocked') 
+                {
+                    ShowComplete("คุณได้ทำการลงทะเบียนเรียบร้อยแล้ว"); // แสดงสถานะลงทะเบียนเสร็จสิ้น
+                    return false; // หยุดการทำงาน
+                }
+                
+                if (data.status !== 'allowed') 
+                {
+                    throw new Error(data.message || 'การตรวจสอบสิทธิ์ล้มเหลว');
+                }
+
+                return true; // อนุญาตให้ดำเนินการต่อ
+            }
+            catch (error) 
+            {
+                console.error("Error checking device ID permission:", error);
+                ShowError("เกิดข้อผิดพลาดในการตรวจสอบสิทธิ์ กรุณาลองใหม่อีกครั้ง");
+                return false;
+            }
+            
         }
 
         // --- 9. ฟังก์ชันป้องกันการคัดลอก (Deterrents) ---
