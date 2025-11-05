@@ -159,9 +159,9 @@
         // --- 1. ตั้งค่าตัวแปร ---
         //13.927301, 100.389257 บ้าน
         //13.755956, 100.492430 กองอำนวยการสนามหลวง
-        //13.8766,  100.4044 ที่อยู่ localhost
-        const TARGET_LATITUDE = 13.8766;  // 
-        const TARGET_LONGITUDE = 100.4044; //
+        //13.9214,  100.4324 ที่อยู่ localhost
+        const TARGET_LATITUDE = 13.755956;  // 
+        const TARGET_LONGITUDE = 100.492430; //
         const MAX_RADIUS_METERS = 500;
 
         // !!! 1.1 ใส่ลิงก์ "formesign" ของคุณ
@@ -246,13 +246,13 @@
         async function SuccessCallback(position) {
             userLocation = position.coords; // เก็บพิกัด
 
-            ShowLoadingMessage("กำลังดึงข้อมูล IP และ Device ID...");
+            ShowLoadingMessage("กำลังดึงข้อมูล...");
 
             const [deviceId, ipAddress] = await Promise.all([GetDeviceIdAsync(), GetIpAddressAsync()]);
 
             // ตรวจสอบว่าดึงข้อมูลสำเร็จหรือไม่
             if (!deviceId || !ipAddress) {
-                ShowError("ไม่สามารถดึงข้อมูล IP หรือ Device ID ได้ กรุณาลองใหม่อีกครั้ง");
+                ShowError("ดึงข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
                 return;
             }
 
@@ -380,7 +380,7 @@
         {
             try
             {
-                ShowLoadingMessage("กำลังตรวจสอบสิทธิ์การใช้งาน...");
+                /* ShowLoadingMessage("กำลังตรวจสอบสิทธิ์การใช้งาน...");
                 
                 const checkUrl = `${FORM_SCRIPT_WEB_APP_URL}?deviceId=${deviceId}`;
                 console.log("Checking URL:", checkUrl);
@@ -401,7 +401,7 @@
                 if (data.status !== 'allowed') 
                 {
                     throw new Error(data.message || 'การตรวจสอบสิทธิ์ล้มเหลว');
-                }
+                } */
 
                 return true; // อนุญาตให้ดำเนินการต่อ
             }
