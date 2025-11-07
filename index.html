@@ -125,10 +125,24 @@
             <div id="success-prompt">
                 <h2>ยินดีต้อนรับ!</h2>
                 <p>คุณอยู่ในพื้นที่ที่กำหนด</p>
+                <!-- นี่คือฟอร์ม "หน้าบ้าน" ของเรา -->
+                <form id="data-form">
+                    <div class="form-field">
+                        <label for="user-name">ชื่อ-นามสกุล:</label>
+                        <input type="text" id="user-name" required>
+                    </div>
+                    <br>
+                    <button type="submit" id="submit-button" class="button">
+                        ส่งข้อมูล
+                    </button>
+                    
+                    <!-- (เพิ่ม) พื้นที่สำหรับแสดงสถานะการส่ง -->
+                    <div id="form-status"></div>
+                </form>
                 <br>
-                <button id="google-form-button" class="button">
+                <!-- <button id="google-form-button" class="button">
                     ไปที่ฟอร์มลงทะเบียน
-                </button>
+                </button> -->
             </div>
 
             <!-- Part 2: Iframe (ซ่อนไว้ตอนแรก) -->
@@ -160,8 +174,9 @@
         //13.927301, 100.389257 บ้าน
         //13.755956, 100.492430 กองอำนวยการสนามหลวง
         //13.9214,  100.4324 ที่อยู่ localhost
-        const TARGET_LATITUDE = 13.755956;  // 
-        const TARGET_LONGITUDE = 100.492430; //
+        // 13.8313728,100.4732416 //local rj22
+        const TARGET_LATITUDE = 13.8313728;  // 
+        const TARGET_LONGITUDE = 100.4732416; //
         const MAX_RADIUS_METERS = 500;
 
         // !!! 1.1 ใส่ลิงก์ "formesign" ของคุณ
@@ -171,6 +186,8 @@
         const LONGITUDE_ENTRY_ID = "entry.973720237";
         const IP_ADDRESS_ENTRY_ID = "entry.108870544"; // <-- !!! ใส่ Entry ID สำหรับ IP Address ถ้ามี
         const DEVICE_ID_ENTRY_ID = "entry.1547418066"; // <-- !!! ใส่ Entry ID สำหรับ Device ID ถ้ามี
+
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyJnCCj59TD5GjdsZxNZNyMF0nyP0U9pmySzhnWtrVdDDQidgUrQ1YR44Q6LOcDq1NY/exec";
 
         // -------------------------------------------------------------
 
@@ -186,7 +203,13 @@
         const formIframeElement = document.getElementById("form-iframe");
         const successPrompt = document.getElementById("success-prompt");
         const googleFormButton = document.getElementById("google-form-button");
-        
+        // form connection
+        const dataForm = document.getElementById("data-form");
+        const userNameInput = document.getElementById("user-name");
+        const submitButton = document.getElementById("submit-button");
+        const formStatus = document.getElementById("form-status");
+
+        let currentUserLocation = null;
         let userIP = null; // ตัวแปรสำหรับเก็บ IP
         let userLocation = null; // ตัวแปรสำหรับเก็บพิกัด
         let userDeviceId = null; // ตัวแปรสำหรับเก็บ Device ID
@@ -315,7 +338,7 @@
             successContainer.classList.remove("hidden"); 
 
             // เพิ่ม listener ให้ปุ่ม (ปุ่มจะยังกดไม่ได้จนกว่าจะได้ IP)
-            googleFormButton.addEventListener("click", function() {
+            /* googleFormButton.addEventListener("click", function() {
                 // ถ้าปุ่มยังไม่พร้อม (เผื่อมีคนพยายามคลิก)
                 if (!userLocation || !userIP || !userDeviceId) {
                     return; 
@@ -336,7 +359,75 @@
 
                 // แสดง iframe
                 formIframeElement.classList.remove("hidden");
+            }); */
+
+            dataForm.addEventListener("submit", function(event) {
+                // "ป้องกัน" ไม่ให้ฟอร์มรีเฟรชหน้า (พฤติกรรมปกติของ HTML)
+                event.preventDefault(); 
+                submitToGoogleSheet();
             });
+        }
+
+        async function submitToGoogleSheet() {
+            const userName = userNameInput.value;
+            
+            if (userName.trim() === "") {
+                formStatus.textContent = "กรุณากรอกชื่อ";
+                formStatus.className = "error";
+                return;
+            }
+            
+            // 1. แสดงสถานะ "กำลังโหลด"
+            submitButton.disabled = true;
+            submitButton.textContent = "กำลังส่ง...";
+            formStatus.textContent = "";
+
+            // 2. เตรียมข้อมูลที่จะส่ง (ต้องตรงกับที่ Apps Script รอรับ)
+            const formData = {
+                name: userName,
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
+                ipAddress: userIP,
+                deviceId: userDeviceId
+            };
+
+            try {
+                // 3. ใช้ "fetch" (เหมือน C# WebRequest) เพื่อยิงข้อมูล
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: "POST",
+                    mode: "cors", // (จำเป็นสำหรับการยิงข้ามโดเมน)
+                    // (จำเป็น) ต้องบอก Apps Script ว่าเราส่ง Text ไป
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8", 
+                    },
+                    // (จำเป็น) แปลง Object ของเราเป็น JSON Text
+                    body: JSON.stringify(formData) 
+                });
+
+                const result = await response.json();
+
+                // 4. ตรวจสอบผลลัพธ์ที่ Apps Script ส่งกลับมา
+                if (result.result === "success") {
+                    // 5. ถ้าสำเร็จ!
+                    formStatus.textContent = "ส่งข้อมูลเรียบร้อย! ขอบคุณครับ";
+                    formStatus.className = "success";
+                    // (ทางเลือก) ล้างฟอร์มและล็อกปุ่ม
+                    dataForm.reset(); 
+                    submitButton.disabled = true;
+                    submitButton.textContent = "ส่งแล้ว";
+                } else {
+                    // 6. ถ้า Apps Script มีปัญหา
+                    throw new Error(result.message || "เกิดข้อผิดพลาดที่เซิร์ฟเวอร์");
+                }
+
+            } catch (error) 
+            {
+                // 7. ถ้าเน็ตเวิร์กมีปัญหา (เช่น ยิงไปไม่ถึง)
+                formStatus.textContent = `เกิดข้อผิดพลาด: ${error.message}`;
+                formStatus.className = "error";
+                submitButton.disabled = false; // ปลดล็อกปุ่มให้ลองใหม่
+                submitButton.textContent = "ส่งข้อมูล";
+            }
         }
 
         function ShowLoadingMessage(message) {
