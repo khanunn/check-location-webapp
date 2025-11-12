@@ -1,313 +1,703 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ตรวจสอบตำแหน่ง</title>
-
+    <link rel="icon" 
+        href="https://img5.pic.in.th/file/secure-sv1/CityLawEnforcementB-W_tranparent.png" 
+        type="image/png">
+    <title>ลงทะเบียนข้อมูล</title>
+    
+    <!-- (ส่วนที่ 1) CSS Styling: ปรับปรุงหน้าตาใหม่ทั้งหมด -->
     <style>
+        :root {
+            --primary-color: #303030;
+            --error-color: #d93025;
+            --text-color: #202124;
+            --border-color: #dadce0;
+            --bg-color: #f8f9fa;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /* ใช้ฟอนต์ Sarabun ถ้ามี เพื่อความเป็นทางการ */
+            background-color: var(--bg-color);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 90vh;
-            background-color: #f4f7f6;
-            color: #333;
-            text-align: center;
-            padding: 0px;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
             box-sizing: border-box;
         }
 
-        /* สไตล์หลักของ container: ใช้สำหรับหน้า Loading/Prompt */
+        /* นำเข้าฟอนต์ Sarabun จาก Google Fonts (ทางเลือก) */
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap');
+
         .container {
             background-color: #ffffff;
-            padding: 2rem;
-            /* Initial padding for the centered card look */
+            padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            max-width: 500px;
-            /* จำกัดความกว้างเริ่มต้นเป็นกล่องเล็กๆ */
-            width: 90%;
-            /* เพิ่ม transition เพื่อให้การขยายดูนุ่มนวล */
-            transition: max-width 0.5s ease-in-out, padding 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08); /* ปรับเงาให้นุ่มขึ้น */
+            max-width: 680px; /* ขยายความกว้างเล็กน้อย */
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        /* !!! สไตล์ที่จะใช้เมื่อ iframe ถูกแสดง (จะถูกเพิ่มด้วย JS) !!! */
-        .full-iframe-view {
-            max-width: 1500px;
-            /* ขยายความกว้างสูงสุดบนจอใหญ่ */
-            width: 95%;
-            /* กว้างขึ้นบนทุกอุปกรณ์ */
-            padding: 1rem;
-            /* ลด padding ลงเพื่อให้ iframe มีพื้นที่มากขึ้น */
-            box-shadow: none;
-            /* ลบเงาออกเพื่อให้ดูเหมือนเป็นส่วนหนึ่งของพื้นหลัง */
+        /* --- Header Section Styling --- */
+        .header-section {
+            text-align: center;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .header-logo {
+            max-width: 120px; /* ขนาดโลโก้ */
+            height: auto;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        /* Placeholder สำหรับโลโก้ (ถ้ายังไม่มีรูปจริง) */
+        .logo-placeholder {
+            width: 100px;
+            height: 100px;
+            background-color: #e9ecef;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: #adb5bd;
+            font-size: 14px;
+        }
+        .header-title {
+            font-size: 22px; /* ปรับขนาดหัวเรื่อง */
+            font-weight: 700; /* ตัวหนา */
+            line-height: 1.5;
+            color: #333;
+            margin: 0;
         }
 
-        .hidden {
-            display: none;
+        /* Typography & Section Headers */
+        h2 {
+            margin-top: 0;
+            color: var(--primary-color); /* ใช้สีหลักเน้นหัวข้อส่วน */
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 12px;
         }
 
-        .button {
-            display: inline-block;
-            background-color: #007aff;
-            color: #ffffff;
+        /* Form Grid Layout */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 24px; /* เพิ่มระยะห่างแนวนอน */
+            margin-bottom: 25px;
+        }
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; gap: 16px; }
+            .container { padding: 25px 20px; } /* ลด padding ในมือถือ */
+            .header-title { font-size: 18px; } /* ลดขนาดหัวเรื่องในมือถือ */
+        }
+
+        /* Form Fields Styling */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 15px; /* ปรับขนาดให้อ่านง่าย */
+            color: #495057;
+        }
+        .required-mark {
+            color: var(--error-color);
+            margin-left: 3px;
+        }
+        .form-input, .form-select {
+            padding: 12px 14px; /* เพิ่มพื้นที่คลิก */
+            font-size: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px; /* โค้งมนมากขึ้นเล็กน้อย */
+            outline: none;
+            transition: all 0.2s ease-in-out;
+            background-color: #fff;
+            font-family: inherit; /* ใช้ฟอนต์เดียวกับ body */
+        }
+        .form-input:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15); /* เพิ่มเงาตอน Focus */
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 35px;
+        }
+        .btn {
+            flex: 1;
             padding: 12px 24px;
             font-size: 16px;
             font-weight: 600;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: background-color 0.2s;
             border: none;
+            border-radius: 6px;
             cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
         }
+        .btn:active { transform: scale(0.98); } /* เอฟเฟกต์กดปุ่ม */
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: #a1a1a1; }
+        .btn-secondary { background-color: #e9ecef; color: #495057; }
+        .btn-secondary:hover { background-color: #dee2e6; }
+        .btn:disabled { background-color: #adb5bd; cursor: not-allowed; opacity: 0.7; }
 
-        .button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-
-        .error-message {
-            color: #d93025;
-            font-weight: 500;
-            margin-top: 1rem;
-        }
-
-        .status-message {
-            color: #555;
-            font-size: 18px;
-            font-weight: 500;
-        }
-
-        /* สไตล์สำหรับ iframe */
-        #form-iframe {
-            width: 100%;
-            height: 90vh;
-            /* เพิ่มความสูงเป็น 85% ของความสูงหน้าจอ */
-            border: 0px solid #ccc;
-            border-radius: 0px;
-            margin-top: 0rem;
-        }
-
-        /* ซ่อน iframe ตอนเริ่มต้น */
-        #form-iframe.hidden {
-            display: none;
-        }
+        /* Utilities */
+        .hidden { display: none !important; }
+        .error-text { color: var(--error-color); font-size: 13px; margin-top: 6px; display: none; }
+        .status-message { text-align: center; color: #6c757d; font-size: 16px; line-height: 1.6; }
+        #form-status { margin-top: 25px; text-align: center; font-weight: 500; }
+        .status-success { color: #28a745; }
+        .status-error { color: var(--error-color); }
     </style>
 </head>
-
 <body>
 
-    <!-- เปลี่ยนไปใช้ querySelector ใน JS เพื่ออ้างอิงถึงตัวนี้ -->
     <div class="container">
 
-        <!-- 1. สถานะกำลังโหลด (Loading State) -->
+        <!-- ================= HEADER SECTION (ส่วนที่เพิ่มใหม่) ================= -->
+        <div class="header-section">
+            <!-- 
+              วิธีใส่โลโก้จริง: 
+              ให้ลบ <div class="logo-placeholder">...</div> ออก 
+              แล้วเปิดใช้งาน <img> ด้านล่างแทน โดยเปลี่ยน src เป็น URL รูปของคุณ 
+            -->
+            <!-- <img src="YOUR_LOGO_URL.png" alt="Logo" class="header-logo"> -->
+            
+            <!-- (ตัวอย่าง Placeholder ถ้ายังไม่มีโลโก้) -->
+            <img src="https://img5.pic.in.th/file/secure-sv1/CityLawEnforcementB-W_tranparent.png" alt="Logo" class="header-logo">
+            
+            <h1 class="header-title">
+                ลงทะเบียนการปฏิบัติหน้าที่ตามแผนดูแลความเป็นระเบียบเรียบร้อย และอำนวยความสะดวกงานพระบรมศพ สมเด็จพระนางเจ้าสิริกิติ์ พระบรมราชินีนาถ พระบรมราชชนนีพันปีหลวง
+            </h1>
+        </div>
+        <!-- ============================================================== -->
+        
+        <!-- --- Loading Screen --- -->
         <div id="loading-container" class="status-message">
             <p>กำลังตรวจสอบตำแหน่งของคุณ...</p>
-            <p>กรุณากด "Allow" หรือ "อนุญาต" เมื่อเบราว์เซอร์ถาม</p>
+            <p><small>กรุณากด "Allow" หรือ "อนุญาต" เพื่อดำเนินการต่อ</small></p>
         </div>
 
-        <!-- 2. สถานะสำเร็จ (Success State) - ซ่อนไว้ตอนเริ่ม -->
-        <div id="success-container" class="hidden">
-
-            <!-- Part 1: Prompt (แสดงตอนแรก) -->
-            <div id="success-prompt">
-                <h2>ยินดีต้อนรับ!</h2>
-                <p>คุณอยู่ในพื้นที่ที่กำหนด</p>
-                <br>
-                <button id="google-form-button" class="button" disabled>
-                    กำลังดึงข้อมูล...
-                </button>
-            </div>
-
-            <!-- Part 2: Iframe (ซ่อนไว้ตอนแรก) -->
-            <iframe id="form-iframe" class="hidden" src="" frameborder="0" scrolling="auto">
-                กำลังโหลดฟอร์ม...
-            </iframe>
+        <!-- --- Error Screen (Location Failed) --- -->
+        <div id="error-container" class="hidden" style="text-align: center;">
+            <h2 style="color: var(--error-color);">เข้าใช้งานไม่ได้</h2>
+            <p id="error-message"></p>
         </div>
 
-        <!-- 3. สถานะล้มเหลว (Error State) - ซ่อนไว้ตอนเริ่ม -->
-        <div id="error-container" class="hidden">
-            <h2>เข้าถึงไม่ได้</h2>
-            <p class="error-message" id="error-message">
-                <!-- ข้อความ Error จะถูกเติมโดย JavaScript -->
-            </p>
+        <!-- --- Main App Container (หลังจากผ่าน Location Check) --- -->
+        <div id="main-app-container" class="hidden">
+            <form id="main-form" onsubmit="return false;"> <!-- ป้องกันการ Submit ปกติ -->
+                
+                <!-- ================= STEP 1: ข้อมูลทั่วไป ================= -->
+                <div id="step1">
+                    <h2>ข้อมูลทั่วไป</h2>
+                    
+                    <div class="form-grid">
+                        <!-- ชื่อ - สกุล -->
+                        <div class="form-group">
+                            <label class="form-label">ชื่อ - สกุล <span class="required-mark">*</span></label>
+                            <input type="text" id="input-name" class="form-input" placeholder="กรอกชื่อ-นามสกุล">
+                            <div class="error-text">กรุณากรอกชื่อ-นามสกุล</div>
+                        </div>
+
+                        <!-- หมายเลขโทรศัพท์ -->
+                        <div class="form-group">
+                            <label class="form-label">หมายเลขโทรศัพท์ <span class="required-mark">*</span></label>
+                            <input type="tel" id="input-phone" class="form-input" placeholder="เช่น 0812345678">
+                            <div class="error-text">กรุณากรอกเบอร์โทรศัพท์</div>
+                        </div>
+
+                        <!-- ตำแหน่ง (Dropdown) -->
+                        <div class="form-group">
+                            <label class="form-label">ตำแหน่ง <span class="required-mark">*</span></label>
+                            <select id="input-position" class="form-select">
+                                <option value="">- กรุณาเลือก -</option>
+                                <option value="1">พนักงานเทศกิจ</option>
+                                <option value="2">พนักงานเทศกิจ ส1</option>
+                                <option value="3">พนักงานเทศกิจ ส2</option>
+                                <option value="4">พนักงานเทศกิจ ส3</option>
+                                <option value="5">พนักงานขับรถ ส.1</option>
+                                <option value="6">พนักงานขับรถ ส.2</option>
+                                <option value="7">พนักงานเทศกิจปฏิบัติงาน</option>
+                                <option value="8">พนักงานเทศกิจชำนาญงาน</option>
+                                <option value="9">พนักงานเทศกิจอาวุโส</option>
+                                <option value="10">นิติกรปฏิบัติการ</option>
+                                <option value="11">นิติกรชำนาญการ</option>
+                                <option value="12">เจ้าพนักงานเทศกิจปฏิบัติการ</option>
+                                <option value="13">เจ้าพนักงานเทศกิจชำนาญการ</option>
+                                <option value="14">เจ้าพนักงานเทศกิจชำนาญการพิเศษ</option>
+                                <option value="15">ผู้อำนวยการส่วนตรวจและบังคับการ 1</option>
+                                <option value="16">ผู้อำนวยการส่วนตรวจและบังคับการ 2</option>
+                                <option value="17">ผู้อำนวยการส่วนตรวจและบังคับการ 3</option>
+                                <option value="18">ผู้อำนวยการกองนิติการและบังคับคดี</option>
+                                <option value="19">ผู้อำนวยการกองโนบายและแผนงาน</option>
+                                <option value="20">เลขานุการสำนักเทศกิจ</option>
+                                <option value="21">ผู้อำนวยการสำนักงานตรวจและบังคับกาาร</option>
+                                <option value="22">รองผู้อำนวยการ</option>
+                                <option value="23">ผู้อำนวยการสำนักเทศกิจ</option>
+                            </select>
+                            <div class="error-text">กรุณาเลือกตำแหน่ง</div>
+                        </div>
+
+                        <!-- หน่วยงาน (Dropdown - ตัวกำหนดเงื่อนไข) -->
+                        <div class="form-group">
+                            <label class="form-label">หน่วยงาน <span class="required-mark">*</span></label>
+                            <select id="input-department" class="form-select">
+                                <option value="">- กรุณาเลือก -</option>
+                                <option value="CLE">สำนักเทศกิจ</option>
+                                <option value="DIS">สำนักงานเขต</option>
+                            </select>
+                            <div class="error-text">กรุณาเลือกหน่วยงาน</div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" onclick="validateAndNextStep()">ถัดไป</button>
+                    </div>
+                </div>
+
+                <!-- ================= STEP 2A: สำหรับฝ่าย City Law Enforcement ================= -->
+                <div id="step2-cle" class="hidden">
+                    <h2>สำนักเทศกิจ</h2>
+                    <div class="form-group">
+                        <label class="form-label">สำนักงานตรวจและบังคับการ <span class="required-mark">*</span></label>
+                        <select id="input-cle-role" class="form-select">
+                            <option value="">- กรุณาเลือก -</option>
+                            <option value="1">ส่วนตรวจและบังคับการ 1</option>
+                            <option value="2">ส่วนตรวจและบังคับการ 2</option>
+                            <option value="3">ส่วนตรวจและบังคับการ 3</option>
+                            <option value="4">สำนักงานตรวจและบังคับการ</option>
+                            <option value="5">กลุ่มงานผู้ตรวจการเทศกิจ</option>
+                            <option value="6">สำนักงานเลขานุการ</option>
+                            <option value="7">กองนโยบายและแผนงาน</option>
+                            <option value="8">กองนิติการและบังคับคดี</option>
+                            <option value="9">รองผู้อำนวยการสำนักเทศกิจ</option>
+                            <option value="10">ผู้อำนวยการสำนักเทศกิจ</option>
+                        </select>
+                        <div class="error-text">กรุณาเลือกสำนัก</div>
+                    </div>
+                    
+                    <!-- <div class="btn-group">
+                        <button type="button" class="btn btn-secondary" onclick="goBackToStep1()">ย้อนกลับ</button>
+                        <button type="button" class="btn btn-primary" onclick="finalSubmit('CLE')">ส่งข้อมูล (CLE)</button>
+                    </div> -->
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary" onclick="goBackToStep1()">ย้อนกลับ</button>
+                        <button type="button" class="btn btn-primary" onclick="validateAndNextStep2('CLE')">ถัดไป</button>
+                    </div>
+                </div>
+
+                <!-- ================= STEP 2B: สำหรับฝ่าย District ================= -->
+                <div id="step2-dis" class="hidden">
+                    <h2>สำนักงานเขต</h2>
+                    <div class="form-group">
+                        <label class="form-label">เขต <span class="required-mark">*</span></label>
+                        <select id="input-dis-role" class="form-select">
+                            <option value="">- กรุณาเลือก -</option>
+                            <option value="1">คลองสาน</option>
+                            <option value="2">คลองสามวา</option>
+                            <option value="3">คลองเตย</option>
+                            <option value="4">คันนายาว</option>
+                            <option value="5">จตุจักร</option>
+                            <option value="6">จอมทอง</option>
+                            <option value="7">ดอนเมือง</option>
+                            <option value="8">ดินแดง</option>
+                            <option value="9">ดุสิต</option>
+                            <option value="10">ตลิ่งชัน</option>
+                            <option value="11">ทวีวัฒนา</option>
+                            <option value="12">ทุ่งครุ</option>
+                            <option value="13">ธนบุรี</option>
+                            <option value="14">บึงกุ่ม</option>
+                            <option value="15">บางกะปิ</option>
+                            <option value="16">บางกอกใหญ่</option>
+                            <option value="17">บางกอกน้อย</option>
+                            <option value="18">บางขุนเทียน</option>
+                            <option value="19">บางคอแหลม</option>
+                            <option value="20">บางเขน</option>
+                            <option value="21">บางแค</option>
+                            <option value="22">บางนา</option>
+                            <option value="23">บางพลัด</option>
+                            <option value="24">บางบอน</option>
+                            <option value="25">บางรัก</option>
+                            <option value="26">บางซื่อ</option>
+                            <option value="27">ประเวศ</option>
+                            <option value="28">ปทุมวัน</option>
+                            <option value="29">ป้อมปราบศัตรูพ่าย</option>
+                            <option value="30">พญาไท</option>
+                            <option value="31">พระนคร</option>
+                            <option value="32">พระโขนง</option>
+                            <option value="33">ภาษีเจริญ</option>
+                            <option value="34">มีนบุรี</option>
+                            <option value="35">ยานนาวา</option>
+                            <option value="36">ราชเทวี</option>
+                            <option value="37">ราษฎร์บูรณะ</option>
+                            <option value="38">ลาดกระบัง</option>
+                            <option value="39">ลาดพร้าว</option>
+                            <option value="40">วังทองหลาง</option>
+                            <option value="41">วัฒนา</option>
+                            <option value="42">สาทร</option>
+                            <option value="43">สายไหม</option>
+                            <option value="44">สัมพันธวงศ์</option>
+                            <option value="45">สวนหลวง</option>
+                            <option value="46">สะพานสูง</option>
+                            <option value="47">หลักสี่</option>
+                            <option value="48">หนองจอก</option>
+                            <option value="49">หนองแขม</option>
+                            <option value="50">ห้วยขวาง</option>
+                        </select>
+                        <div class="error-text">กรุณาเลือกเขต</div>
+                    </div>
+
+                    <!-- <div class="btn-group">
+                        <button type="button" class="btn btn-secondary" onclick="goBackToStep1()">ย้อนกลับ</button>
+                        <button type="button" class="btn btn-primary" onclick="finalSubmit('DIS')">ส่งข้อมูล (DIS)</button>
+                    </div> -->
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary" onclick="goBackToStep1()">ย้อนกลับ</button>
+                        <button type="button" class="btn btn-primary" onclick="validateAndNextStep2('DIS')">ถัดไป</button>
+                    </div>
+                </div>
+
+                <!-- ================= STEP 3: ช่วงเวลาปฏิบัติหน้าที่ ================= -->
+                <div id="step3-duty-time" class="hidden">
+                    <h2>ช่วงเวลาปฏิบัติหน้าที่</h2>
+                    <div class="form-group">
+                        <label class="form-label">ช่วงเวลา <span class="required-mark">*</span></label>
+                        <select id="input-time-range" class="form-select">
+                            <option value="">- กรุณาเลือก -</option>
+                            <option value="1">08:00 น. - 16:00 น.</option>
+                            <option value="2">16:00 น. - 00:00 น.</option>
+                        </select>
+                        <div class="error-text">กรุณาเลือกช่วงเวลา</div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary" onclick="goBackToStep2()">ย้อนกลับ</button>
+                        <button type="button" class="btn btn-primary" onclick="validateAndNextStep3()">ถัดไป</button>
+                    </div>
+                </div>
+
+                <!-- ================= STEP 4: จุดสกัด ================= -->
+                <div id="step4-extraction-point" class="hidden">
+                    <h2>จุดสกัด</h2>
+                    <div class="form-group">
+                        <label class="form-label">พื้นที่รับผิดชอบ <span class="required-mark">*</span></label>
+                        <select id="input-area-responsible" class="form-select">
+                            <option value="">- กรุณาเลือก -</option>
+                            <option value="1">จุดสกัดที่ 1 กองอำนวยการร่วมเทศกิจกรุงเทพมหานคร</option>
+                            <option value="2">ศูนย์บริการรถพลังงานไฟฟ้า (รถกอล์ฟ)</option>
+                            <option value="3">ศูนย์สื่อสาร</option>
+                            <option value="4">จุดสกัดที่ 2 จุดพักคอยจุดที่ 1 รวมประตูทางเข้า-ออก ถนนผ่ากลางฝั่ง ม.ธรรมศาสตร์ และทางลงอุโมงค์ทางรอดถนนหน้าพระลาน พระนคร / พระนคร</option>
+                            <option value="5">จุดสกัดที่ 3 จุดพักคอยจุดที่ 2</option>
+                            <option value="6">จุดสกัดที่ 4 บริเวณถนนผ่ากลางจากประตูทางเข้าถึงประตูทางออก</option>
+                            <option value="7">จุดสกัดที่ 5 ถนนหน้าพระธาตุ ตั้งแต่แยกพระจันทร์ ถึง พิพิธภัณฑ์สถานแห่งชาติ ทั้งสองฝั่ง</option>
+                            <option value="8">จุดสกัดที่ 6 ถนนหน้าพระธาตุตั้งแต่แยกพระจันทร์ ถึง ถนนหน้าพระลาน ทั้งสองฝั่ง และสามเหลี่ยมหน้าพระลาน</option>
+                            <option value="9">จุดสกัดที่ 7 บริเวณท่าช้าง ถนนมหาราช และให้รวมถึงสามแยกท่าช้าง</option>
+                            <option value="10">จุดสกัดที่ 8 ถนนมหาราช ตั้งแต่ประตูเทวาภิรมย์ ถึง สามแยกถนนหน้าพระลาน ทั้งสองฝั่ง</option>
+                            <option value="11">จุดสกัดที่ 9 ถนนหน้าพระลานตลอดสาย</option>
+                            <option value="12">จุดสกัดที่ 10 ถนนสนามไชย และถนนราชดำเนินใน ตั้งแต่ ถนนกัลยาณไมตรีถึง ประตู 3 ศาลฎีกา ทั้งสองฝั่ง</option>
+                            <option value="13">จุดสกัดที่ 11 ถนนราชดำเนินใน ตั้งแต่ประตู 3 ศาลฎีกา ถึงพระแม่ธรณีบีบมวยผม ทั้งสองฝั่ง</option>
+                            <option value="14">จุดสกัดที่ 12 ดูแลความเรียบร้อยโรงครัวพระราชทาน ในบริเวณสนามหลวงฝั่ง ม.ธรรมศาสตร์</option>
+                        </select>
+                        <div class="error-text">กรุณาเลือกจุดสกัด</div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary" onclick="goBackToStep3()">ย้อนกลับ</button>
+                        <button type="button" class="btn btn-primary" onclick="finalSubmit()">ส่งข้อมูล</button>
+                    </div>
+                </div>
+
+                <!-- พื้นที่แสดงสถานะการส่ง -->
+                <div id="form-status"></div>
+
+            </form>
         </div>
 
     </div>
 
+    <!-- (ส่วนที่ 3) JavaScript Logic -->
     <script>
-        // --- 1. ตั้งค่าตัวแปร ---
-        //13.927301, 100.389257 บ้าน
-        //13.755956, 100.492430 กองอำนวยการสนามหลวง
-        //13.8766,  100.4044 ที่อยู่ localhost
-        const TARGET_LATITUDE = 13.755956;  // 
-        const TARGET_LONGITUDE = 100.492430; //
-        const MAX_RADIUS_METERS = 500;
+        // --- CONFIGURATION ---
+        const TARGET_LAT = 13.886;  // <--- แก้ไขพิกัดเป้าหมาย
+        const TARGET_LNG = 100.4205; // <--- แก้ไขพิกัดเป้าหมาย
+        const MAX_RADIUS_M = 500;      // <--- รัศมี (เมตร)
+        // !!! ใส่ URL ของ Google Apps Script ที่คุณ Deploy แล้วลงตรงนี้ !!!
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzJ9VdI7wE6JgL55aH7QzL_example/exec"; 
 
-        // !!! 1.1 ใส่ลิงก์ "formesign" ของคุณ
-        const FORM_BASE_URL = "https://formesign.com/public/109194299722203056507/all/form/1FAIpQLScb5C1ACxXbvCzbPVMJWelfCWh3vp-j25WxSVZs0x7wGDg8wg"; // <-- !!! ใส่ URL ฟอร์มจริงของคุณ
-        const LATITUDE_ENTRY_ID = "entry.764289162";
-        const LONGITUDE_ENTRY_ID = "entry.973720237";
-        const IP_ADDRESS_ENTRY_ID = "entry.108870544"; // <-- !!! ใส่ Entry ID สำหรับ IP Address ถ้ามี
+        // --- GLOBAL VARIABLES ---
+        let currentUserCoords = null;
+        let departmentType = null;
 
-        // -------------------------------------------------------------
-
-// --- 2. เชื่อมโยงตัวแปรกับ GameObject ---
-        const mainContainer = document.querySelector(".container");
-        const loadingContainer = document.getElementById("loading-container");
-        const successContainer = document.getElementById("success-container");
-        const errorContainer = document.getElementById("error-container");
-        const errorMessageElement = document.getElementById("error-message");
-        const formIframeElement = document.getElementById("form-iframe");
-        const successPrompt = document.getElementById("success-prompt");
-        const googleFormButton = document.getElementById("google-form-button");
-        const successMessageElement = document.getElementById("success-message");
-        
-        let userIP = null; // ตัวแปรสำหรับเก็บ IP
-        let userLocation = null; // ตัวแปรสำหรับเก็บพิกัด
-
-        // --- 3. ฟังก์ชันที่ทำงานเมื่อเปิดหน้า ---
-        window.onload = function() {
-            checkLocation();
+        // --- INIT ---
+        window.onload = () => {
+            checkGeolocation();
         };
 
-        // --- 4. ฟังก์ชันหลักในการตรวจสอบตำแหน่ง ---
-        function checkLocation() {
+        // ================= SECTION 1: LOCATION CHECK =================
+        function checkGeolocation() {
             if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
-                    enableHighAccuracy: true 
-                });
+                navigator.geolocation.getCurrentPosition(onLocationSuccess, onLocationError);
             } else {
-                showError("เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง");
-            }
-        }
-        
-        // --- 4.1 ฟังก์ชันดึง IP Address (ทำงานหลังจากได้พิกัด) ---
-        async function fetchIPAddress() {
-            try {
-                // เราจะใช้ api.ipify.org เพราะมันง่ายและฟรี
-                const response = await fetch('https://api.ipify.org?format=json');
-                if (!response.ok) throw new Error('Network response was not ok.');
-                const data = await response.json();
-                userIP = data.ip;
-                checkDataAndEnableButton(); // เมื่อได้ IP แล้ว ให้ตรวจสอบ
-            } catch (error) {
-                console.error("Fetch IP Error:", error);
-                // ถ้าดึง IP ไม่ได้ เราจะไม่ให้ไปต่อ
-                showError("ไม่สามารถดึงข้อมูล IP ของคุณได้ กรุณารีเฟรช");
+                showErrorScreen("อุปกรณ์ของคุณไม่รองรับการระบุตำแหน่ง");
             }
         }
 
-        // --- 5. ฟังก์ชันเมื่อดึงตำแหน่ง "สำเร็จ" ---
-        function successCallback(position) {
-            userLocation = position.coords; // เก็บพิกัด
+        function onLocationSuccess(position) {
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+            currentUserCoords = `${userLat}, ${userLng}`;
 
-            const distance = calculateDistance(
-                userLocation.latitude, userLocation.longitude,
-                TARGET_LATITUDE, TARGET_LONGITUDE
-            );
+            const distance = getDistanceFromLatLonInM(userLat, userLng, TARGET_LAT, TARGET_LNG);
 
-            if (distance <= MAX_RADIUS_METERS) {
-                // ถ้าพิกัดผ่าน ให้ไปดึง IP ต่อ
-                showSuccess(); 
-                fetchIPAddress(); // เริ่มดึง IP Address
+            if (distance <= MAX_RADIUS_M) {
+                // ผ่าน! เข้าสู่หน้าแบบฟอร์ม
+                document.getElementById('loading-container').classList.add('hidden');
+                document.getElementById('main-app-container').classList.remove('hidden');
             } else {
-                showError(`คุณอยู่นอกพื้นที่ที่กำหนด (ระยะห่าง: ${distance.toFixed(0)} เมตร)`);
-            }
-        }
-        
-        // --- 5.1 ฟังก์ชันตรวจสอบว่าได้ข้อมูลครบ (พิกัด + IP) หรือยัง ---
-        function checkDataAndEnableButton() {
-            if (userLocation && userIP) {
-                // ถ้าได้ครบทั้ง 2 อย่าง ให้เปลี่ยนปุ่มเป็น "พร้อมใช้งาน"
-                googleFormButton.textContent = "ไปที่ฟอร์มลงทะเบียน";
-                googleFormButton.disabled = false;
+                // ไม่ผ่าน
+                showErrorScreen(`คุณอยู่นอกพื้นที่ที่กำหนด (${distance.toFixed(0)} เมตรจากจุดเช็คอิน)`);
             }
         }
 
-
-        // --- 6. ฟังก์ชันเมื่อดึงตำแหน่ง "ล้มเหลว" ---
-        function errorCallback(error) {
-            // (โค้ดส่วนนี้เหมือนเดิม)
-            let message = "";
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    message = "คุณปฏิเสธการเข้าถึงตำแหน่ง กรุณาอนุญาตเพื่อใช้งาน";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    message = "ไม่สามารถระบุตำแหน่งของคุณได้ในขณะนี้";
-                    break;
-                case error.TIMEOUT:
-                    message = "หมดเวลาในการค้นหาตำแหน่ง";
-                    break;
-                default:
-                    message = "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ";
-                    break;
-            }
-            showError(message);
+        function onLocationError(error) {
+            let msg = "ไม่สามารถระบุตำแหน่งได้";
+            if (error.code === 1) msg = "กรุณาอนุญาตให้เข้าถึงตำแหน่ง (Allow Location Access)";
+            else if (error.code === 2) msg = "สัญญาณ GPS ไม่เสถียร กรุณาลองใหม่";
+            else if (error.code === 3) msg = "หมดเวลาการเชื่อมต่อ GPS";
+            showErrorScreen(msg);
         }
 
-        // --- 7. ฟังก์ชันสำหรับ "สลับ Scene" ---
-        function showSuccess() {
-            loadingContainer.classList.add("hidden"); 
-            errorContainer.classList.add("hidden");   
-            successContainer.classList.remove("hidden"); 
+        function showErrorScreen(msg) {
+            document.getElementById('loading-container').classList.add('hidden');
+            document.getElementById('main-app-container').classList.add('hidden');
+            document.getElementById('error-container').classList.remove('hidden');
+            document.getElementById('error-message').textContent = msg;
+        }
 
-            // เพิ่ม listener ให้ปุ่ม (ปุ่มจะยังกดไม่ได้จนกว่าจะได้ IP)
-            googleFormButton.addEventListener("click", function() {
-                // ถ้าปุ่มยังไม่พร้อม (เผื่อมีคนพยายามคลิก)
-                if (!userLocation || !userIP) {
-                    return; 
+        // ================= SECTION 2: FORM LOGIC & VALIDATION =================
+
+        // ฟังก์ชันตรวจสอบ Step 1 และไปต่อ
+        function validateAndNextStep() {
+            // 1. ดึงค่าจาก Input ทั้งหมดใน Step 1
+            const name = document.getElementById('input-name');
+            const phone = document.getElementById('input-phone');
+            const position = document.getElementById('input-position');
+            const department = document.getElementById('input-department');
+
+            // 2. Reset Error ทั้งหมดก่อน
+            resetErrors([name, phone, position, department]);
+
+            // 3. ตรวจสอบความถูกต้อง (Validation)
+            let isValid = true;
+            if (!name.value.trim()) { showFieldError(name); isValid = false; }
+            if (!phone.value.trim()) { showFieldError(phone); isValid = false; }
+            if (position.value === "") { showFieldError(position); isValid = false; }
+            if (department.value === "") { showFieldError(department); isValid = false; }
+
+            if (!isValid) return; // ถ้ามีช่องไหนไม่ผ่าน ให้หยุดตรงนี้
+
+            // 4. ถ้าผ่านหมด ให้ดูว่าเลือกหน่วยงานอะไร แล้วไปหน้านั้น
+            document.getElementById('step1').classList.add('hidden'); // ซ่อน Step 1
+
+            if (department.value === "CLE") {
+                document.getElementById('step2-cle').classList.remove('hidden'); // แสดงหน้า City Law Enforcement
+            } else if (department.value === "DIS") {
+                document.getElementById('step2-dis').classList.remove('hidden'); // แสดงหน้า DISTRICT
+            }
+        }
+
+        function validateAndNextStep2(deptType)
+        {
+            // ตรวจสอบ Step 2 ตามประเภท
+            let isValidStep2 = true;
+            departmentType = deptType;
+
+            // ตรวจสอบ Validation ของ Step 2 ตามประเภท
+            if (deptType === 'CLE') {
+                const cityLawEnforcement = document.getElementById('input-cle-role');
+                resetErrors([cityLawEnforcement]);
+                if (cityLawEnforcement.value === "") 
+                { 
+                    showFieldError(cityLawEnforcement); 
+                    isValidStep2 = false; 
                 }
+            } else if (deptType === 'DIS') 
+            {
+                const District = document.getElementById('input-dis-role');
+                resetErrors([District]);
+                if (District.value === "") 
+                { 
+                    showFieldError(District); isValidStep2 = false; 
+                }
+            }
 
-                // สร้างลิงก์ Pre-filled ที่มีครบ 3 อย่าง
-                const formUrlWithParams = `${FORM_BASE_URL}?${LATITUDE_ENTRY_ID}=${userLocation.latitude}&${LONGITUDE_ENTRY_ID}=${userLocation.longitude}&${IP_ADDRESS_ENTRY_ID}=${userIP}`;
+            if (!isValidStep2) return; // ถ้า Step 2 ไม่ผ่าน ให้หยุด
 
-                // ขยาย Container
-                mainContainer.classList.add("full-iframe-view"); 
-                
-                // ซ่อนข้อความและปุ่ม
-                successPrompt.classList.add("hidden");
+            if (deptType === "CLE") {
+                document.getElementById('step2-cle').classList.add('hidden'); // ซ่อนหน้า City Law Enforcement
+            } else if (deptType === "DIS") {
+                document.getElementById('step2-dis').classList.add('hidden'); // ซ่อนหน้า DISTRICT
+            }
+            document.getElementById('step3-duty-time').classList.remove('hidden');
+        }
 
-                // ตั้งค่า src ให้ iframe (เพื่อให้เริ่มโหลดตอนนี้)
-                formIframeElement.src = formUrlWithParams;
+        function validateAndNextStep3()
+        {
+            let isValidStep3 = true;
+            const timeRange = document.getElementById('input-time-range');
+            resetErrors([timeRange]);
 
-                // แสดง iframe
-                formIframeElement.classList.remove("hidden");
+            if (timeRange.value === "") 
+            { 
+                showFieldError(timeRange); 
+                return;
+            }
+
+            document.getElementById('step3-duty-time').classList.add('hidden');
+            document.getElementById('step4-extraction-point').classList.remove('hidden');
+        }
+
+        // ฟังก์ชันย้อนกลับ
+        function goBackToStep1() {
+            // ซ่อนทุก Step 2
+            document.getElementById('step2-cle').classList.add('hidden');
+            document.getElementById('step2-dis').classList.add('hidden');
+            // แสดง Step 1 กลับมา
+            document.getElementById('step1').classList.remove('hidden');
+        }
+
+        function goBackToStep2() {
+            // ซ่อนทุก Step 3
+            document.getElementById('step3-duty-time').classList.add('hidden');
+            // แสดง Step 2 กลับมา
+            if(departmentType === "CLE")
+                document.getElementById('step2-cle').classList.remove('hidden');
+            else if(departmentType === "DIS")
+                document.getElementById('step2-dis').classList.remove('hidden');
+        }
+
+        function goBackToStep3() {
+            // ซ่อนทุก Step 4
+            document.getElementById('step4-extraction-point').classList.add('hidden');
+            // แสดง Step 3 กลับมา
+            document.getElementById('step3-duty-time').classList.remove('hidden');
+        }
+
+        // ฟังก์ชันส่งข้อมูลสุดท้าย (Triggered by Submit buttons in Step 2)
+        async function finalSubmit() {
+            let specificAnswer = "";
+            let isValidStep4 = true;
+
+            // ตรวจสอบ Validation ของ Step 4
+            const areaResponsible = document.getElementById('input-area-responsible');
+            resetErrors([areaResponsible]);
+            if (areaResponsible.value === "") 
+            { 
+                showFieldError(areaResponsible); 
+                return;
+            }
+
+            if (departmentType === 'CLE') {
+                const cityLawEnforcement = document.getElementById('input-cle-role');
+                specificAnswer = cityLawEnforcement.value;
+            } else if (departmentType === 'DIS') 
+            {
+                const District = document.getElementById('input-dis-role');
+                specificAnswer = District.value;
+            }
+
+            // --- ถ้าผ่านหมดทุกอย่างแล้ว เตรียมส่งข้อมูล! ---
+            updateStatus("กำลังส่งข้อมูล...", false);
+            disableAllButtons(true);
+
+            // รวมร่างข้อมูลทั้งหมด
+            const payload = {
+                name: document.getElementById('input-name').value,
+                phone: document.getElementById('input-phone').value,
+                position: document.getElementById('input-position').value,
+                department: document.getElementById('input-department').value,
+                specific_answer: specificAnswer, // คำตอบจาก Step 2
+                location: currentUserCoords
+            };
+
+            try {
+                // ยิงข้อมูลไปหา Google Apps Script
+                await fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // ใช้ no-cors เพื่อหลีกเลี่ยงปัญหา Cross-origin (แต่เราจะเช็ค success ยากขึ้นนิดนึง)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                // เนื่องจาก no-cors เราจะ assume ว่าสำเร็จถ้าไม่มี network error
+                // (หรือถ้าอยากได้ response จริงจัง ต้องตั้งค่า GAS เป็น Web App: execute as Me, access: Anyone)
+                updateStatus("บันทึกข้อมูลสำเร็จ!", true);
+                document.getElementById('main-form').reset(); // ล้างฟอร์ม
+                setTimeout(() => window.location.reload(), 3000); // รีเฟรชหน้าใน 3 วิ
+
+            } catch (err) {
+                updateStatus("เกิดข้อผิดพลาดในการส่ง: " + err.message, false, true);
+                disableAllButtons(false);
+            }
+        }
+
+        // --- HELPER FUNCTIONS ---
+        function showFieldError(inputElement) {
+            inputElement.style.borderColor = "var(--error-color)";
+            // แสดง div error-text ที่อยู่ถัดจาก input นั้น
+            inputElement.nextElementSibling.style.display = "block"; 
+        }
+
+        function resetErrors(elements) {
+            elements.forEach(el => {
+                el.style.borderColor = "var(--border-color)";
+                if (el.nextElementSibling && el.nextElementSibling.classList.contains('error-text')) {
+                    el.nextElementSibling.style.display = "none";
+                }
             });
         }
 
-        function showError(message) {
-            errorMessageElement.textContent = message;
-            loadingContainer.classList.add("hidden");
-            successContainer.classList.add("hidden");
-            errorContainer.classList.remove("hidden");
+        function updateStatus(msg, isSuccess, isError = false) {
+            const statusEl = document.getElementById('form-status');
+            statusEl.textContent = msg;
+            statusEl.className = isSuccess ? 'status-success' : (isError ? 'status-error' : '');
         }
 
-        // --- 8. ฟังก์ชันยูทิลิตี้ (Haversine formula) ---
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            // (โค้ดส่วนนี้เหมือนเดิม)
-            const R = 6371e3;
-            const phi1 = lat1 * Math.PI / 180;
-            const phi2 = lat2 * Math.PI / 180;
-            const deltaPhi = (lat2 - lat1) * Math.PI / 180;
-            const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+        function disableAllButtons(disable) {
+            document.querySelectorAll('button').forEach(btn => btn.disabled = disable);
+        }
 
-            const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
-                        Math.cos(phi1) * Math.cos(phi2) *
-                        Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            
+        // Haversine Formula for distance
+        function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
+            const R = 6371e3; 
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
             return R * c;
         }
-
-        // --- 9. ฟังก์ชันป้องกันการคัดลอก (Deterrents) ---
-        window.addEventListener("contextmenu", function(e) {
-            e.preventDefault();
-        }, false);
+        function deg2rad(deg) { return deg * (Math.PI/180); }
 
     </script>
 </body>
