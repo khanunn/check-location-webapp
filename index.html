@@ -437,12 +437,15 @@
 
     <!-- (ส่วนที่ 3) JavaScript Logic -->
     <script>
+        //13.927301, 100.389257 บ้าน
+        //13.755956, 100.492430 กองอำนวยการสนามหลวง
+        //13.886,  100.4205 ที่อยู่ localhost
         // --- CONFIGURATION ---
         const TARGET_LAT = 13.886;  // <--- แก้ไขพิกัดเป้าหมาย
         const TARGET_LNG = 100.4205; // <--- แก้ไขพิกัดเป้าหมาย
         const MAX_RADIUS_M = 500;      // <--- รัศมี (เมตร)
         // !!! ใส่ URL ของ Google Apps Script ที่คุณ Deploy แล้วลงตรงนี้ !!!
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbzJ9VdI7wE6JgL55aH7QzL_example/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbw5rHNSOEXhxlgqUYmToe_LgxtUDWU7Yeeyx2MHf0mhT94QmHL89BzQYsiInh95a9Yhxg/exec"; 
 
         // --- GLOBAL VARIABLES ---
         let currentUserCoords = null;
@@ -619,24 +622,31 @@
 
             if (departmentType === 'CLE') {
                 const cityLawEnforcement = document.getElementById('input-cle-role');
-                specificAnswer = cityLawEnforcement.value;
+                specificAnswer = cityLawEnforcement.options[cityLawEnforcement.selectedIndex]?.text || '';
             } else if (departmentType === 'DIS') 
             {
                 const District = document.getElementById('input-dis-role');
-                specificAnswer = District.value;
+                specificAnswer = District.options[District.selectedIndex]?.text || '';
             }
 
             // --- ถ้าผ่านหมดทุกอย่างแล้ว เตรียมส่งข้อมูล! ---
             updateStatus("กำลังส่งข้อมูล...", false);
             disableAllButtons(true);
 
+            const positionEl = document.getElementById('input-position');
+            const departmentEl = document.getElementById('input-department');
+            const timeRangeEl = document.getElementById('input-time-range');
+            const areaResponsibleEl = document.getElementById('input-area-responsible');
+
             // รวมร่างข้อมูลทั้งหมด
             const payload = {
                 name: document.getElementById('input-name').value,
                 phone: document.getElementById('input-phone').value,
-                position: document.getElementById('input-position').value,
-                department: document.getElementById('input-department').value,
+                position: positionEl.options[positionEl.selectedIndex]?.text || '',
+                department: departmentEl.options[departmentEl.selectedIndex]?.text || '',
                 specific_answer: specificAnswer, // คำตอบจาก Step 2
+                time_range: timeRangeEl.options[timeRangeEl.selectedIndex]?.text || '',
+                area_responsible: areaResponsibleEl.options[areaResponsibleEl.selectedIndex]?.text || '',
                 location: currentUserCoords
             };
 
