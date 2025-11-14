@@ -167,7 +167,7 @@
         .status-error { color: var(--error-color); }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;"></body>
 
     <div class="container">
 
@@ -433,6 +433,18 @@
             </form>
         </div>
 
+        <!-- ================= (เพิ่มใหม่) FINAL SUCCESS SCREEN ================= -->
+        <div id="final-success-container" class="hidden" style="text-align: center; padding: 40px 0;">
+            <!-- ไอคอนเครื่องหมายถูก (SVG) -->
+            <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 20px;">
+                <circle cx="50" cy="50" r="48" stroke="var(--success-color)" stroke-width="4"/>
+                <path d="M30 50 L45 65 L70 35" stroke="var(--success-color)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h2 style="color: var(--success-color); border: none; padding: 0; font-size: 28px; font-weight: 700;">ลงทะเบียนเสร็จสมบูรณ์</h2>
+            <p class="status-message" style="font-size: 18px;">ระบบได้บันทึกข้อมูลของคุณเรียบร้อยแล้ว</p>
+        </div>
+        <!-- =================================================================== -->
+
     </div>
 
     <!-- (ส่วนที่ 3) JavaScript Logic -->
@@ -661,9 +673,13 @@
 
                 // เนื่องจาก no-cors เราจะ assume ว่าสำเร็จถ้าไม่มี network error
                 // (หรือถ้าอยากได้ response จริงจัง ต้องตั้งค่า GAS เป็น Web App: execute as Me, access: Anyone)
-                updateStatus("บันทึกข้อมูลสำเร็จ!", true);
-                document.getElementById('main-form').reset(); // ล้างฟอร์ม
-                setTimeout(() => window.location.reload(), 3000); // รีเฟรชหน้าใน 3 วิ
+                //updateStatus("บันทึกข้อมูลสำเร็จ!", true);
+                document.getElementById('main-app-container').classList.add('hidden');
+                //document.getElementById('main-form').reset(); // ล้างฟอร์ม
+                // และแสดงหน้าจอ "เสร็จสมบูรณ์"
+                document.getElementById('final-success-container').classList.remove('hidden');
+
+                //setTimeout(() => window.location.reload(), 3000); // รีเฟรชหน้าใน 3 วิ
 
             } catch (err) {
                 updateStatus("เกิดข้อผิดพลาดในการส่ง: " + err.message, false, true);
