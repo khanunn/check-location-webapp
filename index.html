@@ -471,7 +471,12 @@
         // ================= SECTION 1: LOCATION CHECK =================
         function checkGeolocation() {
             if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(onLocationSuccess, onLocationError);
+                navigator.geolocation.getCurrentPosition(onLocationSuccess, onLocationError,
+                {
+                    enableHighAccuracy: true, // ขอพิกัดแบบแม่นยำสูง
+                    timeout: 10000,           // รอได้นานสุด 10 วินาที
+                    maximumAge: 0             // ไม่ใช้ค่าเก่าที่แคชไว้
+                });
             } else {
                 showErrorScreen("อุปกรณ์ของคุณไม่รองรับการระบุตำแหน่ง");
             }
@@ -662,24 +667,54 @@
                 location: currentUserCoords
             };
 
+            // 2. แปลง Payload เป็น URLSearchParams เพื่อให้ GAS รับผ่าน e.parameter ได้
+            const formBody = new URLSearchParams();
+            for (const key in payload) {
+                formBody.append(key, payload[key]);
+            }
+
             try {
                 // ยิงข้อมูลไปหา Google Apps Script
-                await fetch(GAS_URL, {
+                console.log("Attempting to send POST request to:", GAS_URL); 
+                const response = await fetch(GAS_URL, 
+                {
                     method: 'POST',
-                    mode: 'no-cors', // ใช้ no-cors เพื่อหลีกเลี่ยงปัญหา Cross-origin (แต่เราจะเช็ค success ยากขึ้นนิดนึง)
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    // mode: 'no-cors', // ถูกเอาออกแล้ว
+                    //headers: { 'Content-Type': 'application/json' },
+                    body: formBody
                 });
 
-                // เนื่องจาก no-cors เราจะ assume ว่าสำเร็จถ้าไม่มี network error
-                // (หรือถ้าอยากได้ response จริงจัง ต้องตั้งค่า GAS เป็น Web App: execute as Me, access: Anyone)
-                //updateStatus("บันทึกข้อมูลสำเร็จ!", true);
-                document.getElementById('main-app-container').classList.add('hidden');
-                //document.getElementById('main-form').reset(); // ล้างฟอร์ม
-                // และแสดงหน้าจอ "เสร็จสมบูรณ์"
-                document.getElementById('final-success-container').classList.remove('hidden');
+                console.log("Fetch response status:", response.status);
 
-                //setTimeout(() => window.location.reload(), 3000); // รีเฟรชหน้าใน 3 วิ
+                if (!response.ok) 
+                    throw new Error(`HTTP error! status: ${response.status}`);
+
+                const text = await response.text();
+                let result;
+
+                try 
+                {
+                    result = JSON.parse(text); 
+                } 
+                catch (e) 
+                {
+                    // ถ้าแปลงไม่ได้ แสดงว่าสิ่งที่ส่งกลับมาไม่ใช่ JSON 
+                    console.error("Server Response Text:", text); // แสดงข้อความเต็มใน Console 
+                    throw new Error("Server did not return valid JSON. Check GAS Deployment or code.gs.");
+                }
+
+                if (result.status === "success") 
+                {
+                    document.getElementById('main-app-container').classList.add('hidden');
+                    document.getElementById('final-success-container').classList.remove('hidden');
+                } 
+                else if (result.message === "ERROR_TOO_MANY_REQUESTS") 
+                {
+                    updateStatus("เกิดข้อผิดพลาด : คุณส่งข้อมูลถี่เกินไป โปรดลองใหม่ภายหลัง", false, true);
+                    disableAllButtons(false);
+                } 
+                else 
+                    throw new Error(`Server error: ${result.message}`);
 
             } catch (err) {
                 updateStatus("เกิดข้อผิดพลาดในการส่ง: " + err.message, false, true);
