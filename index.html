@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" 
-        href="https://img5.pic.in.th/file/secure-sv1/CityLawEnforcementB-W_tranparent.png" 
+        href="https://img5.pic.in.th/file/secure-sv1/CityLawEnforcement_origin_tranparent.png" 
         type="image/png">
     <title>ลงทะเบียนข้อมูล</title>
     
@@ -156,14 +156,107 @@
         #form-status { margin-top: 25px; text-align: center; font-weight: 500; }
         .status-success { color: #28a745; }
         .status-error { color: var(--error-color); }
+
+        #final-success-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        #final-success-container h1 {
+            color: #28a745;
+            font-size: 28px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        #final-success-container p {
+            font-size: 18px;
+            color: #495057;
+        }
+        .success-icon {
+            color: #28a745;
+            font-size: 60px;
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            border-radius: 50%;
+            border: 2px solid #28a745;
+            margin-bottom: 30px;
+            display: inline-block;
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .popup-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 85%;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            animation: scaleIn 0.2s ease-out;
+        }
+
+        .popup-content h3 {
+            margin-top: 0;
+            color: #d93025;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .popup-content p {
+            font-size: 16px;
+            color: #333;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .popup-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        .popup-btn:hover {
+            background-color: #a1a1a1;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleIn { from { transform: scale(0.9); } to { transform: scale(1); } }
     </style>
 </head>
 <body oncontextmenu="return false;"></body>
 
+    <div id="warning-popup" class="popup-overlay hidden">
+        <div class="popup-content">
+            <div style="font-size: 40px; margin-bottom: 10px;">⚠️</div>
+            <h3>คำแนะนำ</h3>
+            <p>ห้ามปิดหน้าจอในระหว่างนี้<br>โปรดรอจนกว่าการลงทะเบียนเสร็จสมบูรณ์</p>
+            <button class="btn popup-btn" onclick="closeWarningPopup()">OK</button>
+        </div>
+    </div>
+
     <div class="container">
 
         <div class="header-section">
-            <img src="https://img5.pic.in.th/file/secure-sv1/CityLawEnforcementB-W_tranparent.png" alt="Logo" class="header-logo">
+            <img src="https://img5.pic.in.th/file/secure-sv1/CityLawEnforcement_origin_tranparent.png" alt="Logo" class="header-logo">
             
             <h1 class="header-title">
                 ลงทะเบียนการปฏิบัติหน้าที่ตามแผนดูแลความเป็นระเบียบเรียบร้อย และอำนวยความสะดวกงานพระบรมศพ สมเด็จพระนางเจ้าสิริกิติ์ พระบรมราชินีนาถ พระบรมราชชนนีพันปีหลวง
@@ -403,8 +496,9 @@
     </div>
 
     <script>
-        const TARGET_LAT = 13.886;
-        const TARGET_LNG = 100.4205;
+        //13.8884 , 100.4301 local
+        const TARGET_LAT = 13.8884;
+        const TARGET_LNG = 100.4301;
         const MAX_RADIUS_M = 500;
         const GAS_URL = "https://script.google.com/macros/s/AKfycbw5rHNSOEXhxlgqUYmToe_LgxtUDWU7Yeeyx2MHf0mhT94QmHL89BzQYsiInh95a9Yhxg/exec"; 
 
@@ -414,6 +508,14 @@
         window.onload = () => {
             checkGeolocation();
         };
+
+        function showWarningPopup() {
+            document.getElementById('warning-popup').classList.remove('hidden');
+        }
+
+        function closeWarningPopup() {
+            document.getElementById('warning-popup').classList.add('hidden');
+        }
 
         function checkGeolocation() {
             if ("geolocation" in navigator) {
@@ -439,7 +541,7 @@
                 document.getElementById('loading-container').classList.add('hidden');
                 document.getElementById('main-app-container').classList.remove('hidden');
             } else {
-                showErrorScreen(`คุณอยู่นอกพื้นที่ที่กำหนด (${distance.toFixed(0)} เมตรจากจุดเช็คอิน)`);
+                showErrorScreen(`คุณอยู่นอกพื้นที่ที่กำหนดจากจุดเช็คอิน)`);
             }
         }
 
@@ -572,6 +674,7 @@
                 specificAnswer = District.options[District.selectedIndex]?.text || '';
             }
 
+            showWarningPopup();
             updateStatus("กำลังส่งข้อมูล...", false);
             disableAllButtons(true);
 
@@ -662,7 +765,14 @@
         }
 
         function disableAllButtons(disable) {
-            document.querySelectorAll('button').forEach(btn => btn.disabled = disable);
+            
+            document.querySelectorAll('button').forEach(btn => {
+                if (btn.classList.contains('popup-btn')) {
+                    btn.disabled = false; // keep popup button enabled
+                } else {
+                    btn.disabled = disable;
+                }
+            });
         }
 
         function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
