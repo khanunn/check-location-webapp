@@ -282,14 +282,14 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">ชื่อ - สกุล <span class="required-mark">*</span></label>
-                            <input type="text" id="input-name" class="form-input" placeholder="กรอกชื่อ-นามสกุล">
-                            <div class="error-text">กรุณากรอกชื่อ-นามสกุล</div>
+                            <input type="text" id="input-name" class="form-input" placeholder="กรอกชื่อ-นามสกุล" oninput="this.value = this.value.replace(/[0-9]/g, '');">
+                            <div class="error-text">กรุณาระบุชื่อ-นามสกุล</div>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">หมายเลขโทรศัพท์ <span class="required-mark">*</span></label>
-                            <input type="tel" id="input-phone" class="form-input" placeholder="เช่น 0812345678">
-                            <div class="error-text">กรุณากรอกเบอร์โทรศัพท์</div>
+                            <input type="tel" id="input-phone" class="form-input" placeholder="เช่น 08x-xxxxxxx" oninput="this.value = this.value.replace(/[^0-9]/g, '');" maxlength="10">
+                            <div class="error-text">กรุณาระบุหมายเลขโทรศัพท์</div>
                         </div>
 
                         <div class="form-group">
@@ -496,11 +496,10 @@
     </div>
 
     <script>
-        //13.8884 , 100.4301 local
-        const TARGET_LAT = 13.8884;
-        const TARGET_LNG = 100.4301;
+        const TARGET_LAT = 13.755956;
+        const TARGET_LNG = 100.492430;
         const MAX_RADIUS_M = 500;
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbw5rHNSOEXhxlgqUYmToe_LgxtUDWU7Yeeyx2MHf0mhT94QmHL89BzQYsiInh95a9Yhxg/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwOsjwaI-NCDKPjX-HItk2ZuNrGWt7hUxThddoNiav65WPf5VSr-KyJK3crvaFUE9zu/exec"; 
 
         let currentUserCoords = null;
         let departmentType = null;
