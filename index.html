@@ -496,17 +496,43 @@
     </div>
 
     <script>
-        const TARGET_LAT = 13.755956;
-        const TARGET_LNG = 100.492430;
+        /* const TARGET_LAT = 13.755956;
+        const TARGET_LNG = 100.492430; */
+        const TARGET_LAT = 13.8884;
+        const TARGET_LNG = 100.4301;
         const MAX_RADIUS_M = 500;
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwOsjwaI-NCDKPjX-HItk2ZuNrGWt7hUxThddoNiav65WPf5VSr-KyJK3crvaFUE9zu/exec"; 
+        //const GAS_URL = "https://script.google.com/macros/s/AKfycbwOsjwaI-NCDKPjX-HItk2ZuNrGWt7hUxThddoNiav65WPf5VSr-KyJK3crvaFUE9zu/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbw5rHNSOEXhxlgqUYmToe_LgxtUDWU7Yeeyx2MHf0mhT94QmHL89BzQYsiInh95a9Yhxg/exec";
 
         let currentUserCoords = null;
         let departmentType = null;
+        let userDeviceId = null;
 
         window.onload = () => {
+            userDeviceId = getOrCreateDeviceId();
             checkGeolocation();
         };
+
+        function getOrCreateDeviceId()
+        {
+            let deviceId = localStorage.getItem('device_unique_id');
+            if(!deviceId)
+            {
+                if(typeof crypto !== 'undefined' && crypto.randomUUID)
+                {
+                    deviceId = crypto.randomUUID();
+                }
+                else
+                {
+                    deviceId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                        return v.toString(16);
+                    });
+                }
+                localStorage.setItem('device_unique_id', deviceId);
+            }
+            return deviceId;
+        }
 
         function showWarningPopup() {
             document.getElementById('warning-popup').classList.remove('hidden');
@@ -690,7 +716,8 @@
                 specific_answer: specificAnswer,
                 time_range: timeRangeEl.options[timeRangeEl.selectedIndex]?.text || '',
                 area_responsible: areaResponsibleEl.options[areaResponsibleEl.selectedIndex]?.text || '',
-                location: currentUserCoords
+                location: currentUserCoords,
+                device_id: userDeviceId
             };
 
             const formBody = new URLSearchParams();
