@@ -37,20 +37,6 @@ function doPost(e) {
       const sheet =
         SpreadsheetApp.getActiveSpreadsheet().getSheetByName("FormResponse");
 
-      sheet.appendRow([
-        new Date(),
-        data.name,
-        phone,
-        data.position,
-        data.department,
-        data.specific_answer,
-        data.time_range,
-        data.area_responsible,
-        data.location,
-        data.device_id,
-      ]);
-      const lastRow = sheet.getLastRow();
-
       cache.put(cacheKey, "locked", cacheSec);
       console.log("Data appended. Lock set for IP: " + userIp);
 
@@ -80,6 +66,21 @@ function doPost(e) {
       }
 
       console.log(`Verification Status: ${verificationStatus}`);
+
+      sheet.appendRow([
+        new Date(),
+        data.name,
+        phone,
+        data.position,
+        data.department,
+        data.specific_answer,
+        data.time_range,
+        data.area_responsible,
+        data.location,
+        data.device_id,
+      ]);
+      const lastRow = sheet.getLastRow();
+
       sheet
         .getRange(lastRow, verificationColumnIndex)
         .setValue(verificationStatus);
