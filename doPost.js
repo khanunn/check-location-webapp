@@ -10,37 +10,45 @@ const verificationColumnIndex = 11;
 
 let dupplicateDeviceName = "";
 
+function doOptions(e) {
+  const response = ContentService.createTextOutput("");
+  response.addHeader("Access-Control-Allow-Origin", "*");
+  response.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+  return response;
+}
+
 function doPost(e) {
   console.log("=== doPost Triggered === (Received POST request)");
 
   let response;
   let verificationStatus = "ไม่ทราบสถานะ";
   const cacheSec = 60;
+  const lock = LockService.getScriptLock();
 
   try {
+    lock.waitLock(10000); // Wait up to 10 seconds for others to finish.
+
     const data = e.parameter;
+    console.log("POST Data: " + JSON.stringify(data));
+
     const submittedLat = (data.location || "").split(",")[0].trim();
     const submittedLong = (data.location || "").split(",")[1].trim();
-    console.log("POST Data (Parsed from e.parameter): " + JSON.stringify(data));
+    const incomingDeviceId = data.device_id || "UNKNOWN_DEVICE";
 
     const cache = CacheService.getScriptCache();
-    const userIp = e.userIp;
-    const cacheKey = "submit_lock_" + userIp;
+    //const userIp = e.userIp;
+    const cacheKey = "submit_lock_" + incomingDeviceId;
 
     if (cache.get(cacheKey)) {
-      console.log("Rate Limit Hit for IP: " + userIp);
+      console.log("Rate Limit Hit for Device: " + incomingDeviceId);
       response = { status: "error", message: "ERROR_TOO_MANY_REQUESTS" };
     } else {
-      console.log("Processing data for IP: " + userIp);
+      console.log("Processing data for Device: " + incomingDeviceId);
       const phone = data.phone ? "'" + data.phone : "";
 
       const sheet =
         SpreadsheetApp.getActiveSpreadsheet().getSheetByName("FormResponse");
-
-      cache.put(cacheKey, "locked", cacheSec);
-      console.log("Data appended. Lock set for IP: " + userIp);
-
-      response = { status: "success", message: "Data saved successfully." };
 
       console.log("Starting verification process...");
       const distance = calculateDistance(
@@ -78,12 +86,12 @@ function doPost(e) {
         data.area_responsible,
         data.location,
         data.device_id,
+        verificationStatus,
       ]);
-      const lastRow = sheet.getLastRow();
+      cache.put(cacheKey, "locked", cacheSec);
+      console.log("Data appended. Lock set for Device: " + incomingDeviceId);
 
-      sheet
-        .getRange(lastRow, verificationColumnIndex)
-        .setValue(verificationStatus);
+      response = { status: "success", message: "Data saved successfully." };
       console.log("--- จบการทำงาน onFormSubmit ---");
     }
   } catch (err) {
@@ -94,6 +102,9 @@ function doPost(e) {
       status: "error",
       message: "GAS Runtime Error: " + err.message,
     };
+  } finally {
+    lock.releaseLock(); // Ensure the lock is released
+    console.log("Lock released.");
   }
 
   const output = ContentService.createTextOutput(
