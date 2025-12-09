@@ -1,8 +1,8 @@
 //13.927301, 100.389257 บ้าน
 //13.755956, 100.492430 กองอำนวยการสนามหลวง
 //13.8766,  100.4044 ที่อยู่ localhost
-const TARGET_LATITUDE = 13.755956;
-const TARGET_LONGITUDE = 100.49243;
+const TARGET_LATITUDE = 13.7301775;
+const TARGET_LONGITUDE = 100.5382131;
 const MAX_RADIUS_METERS = 500;
 
 const deviceIdColumnIndex = 10;
@@ -27,7 +27,7 @@ function doPost(e) {
   const lock = LockService.getScriptLock();
 
   try {
-    lock.waitLock(10000); // Wait up to 10 seconds for others to finish.
+    lock.waitLock(30000); // Wait up to 30 seconds for others to finish.
 
     const data = e.parameter;
     console.log("POST Data: " + JSON.stringify(data));
