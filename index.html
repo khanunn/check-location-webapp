@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" 
-        href="https://img5.pic.in.th/file/secure-sv1/CityLawEnforcement_origin_tranparent.png" 
+    <link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/CityLawEnforcement_origin_tranparent.png"
         type="image/png">
     <title>ลงทะเบียนข้อมูล</title>
-    
+
     <style>
         :root {
             --primary-color: #303030;
@@ -36,7 +36,7 @@
             background-color: #ffffff;
             padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
             max-width: 680px;
             width: 100%;
             box-sizing: border-box;
@@ -48,6 +48,7 @@
             padding-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
         }
+
         .header-logo {
             max-width: 120px;
             height: auto;
@@ -56,6 +57,7 @@
             margin-left: auto;
             margin-right: auto;
         }
+
         .logo-placeholder {
             width: 100px;
             height: 100px;
@@ -68,6 +70,7 @@
             color: #adb5bd;
             font-size: 14px;
         }
+
         .header-title {
             font-size: 22px;
             font-weight: 700;
@@ -92,10 +95,20 @@
             gap: 20px 24px;
             margin-bottom: 25px;
         }
+
         @media (max-width: 600px) {
-            .form-grid { grid-template-columns: 1fr; gap: 16px; }
-            .container { padding: 25px 20px; }
-            .header-title { font-size: 18px; }
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .container {
+                padding: 25px 20px;
+            }
+
+            .header-title {
+                font-size: 18px;
+            }
         }
 
         .form-group {
@@ -103,17 +116,21 @@
             flex-direction: column;
             text-align: left;
         }
+
         .form-label {
             font-weight: 500;
             margin-bottom: 8px;
             font-size: 15px;
             color: #495057;
         }
+
         .required-mark {
             color: var(--error-color);
             margin-left: 3px;
         }
-        .form-input, .form-select {
+
+        .form-input,
+        .form-select {
             padding: 12px 14px;
             font-size: 16px;
             border: 1px solid var(--border-color);
@@ -123,7 +140,9 @@
             background-color: #fff;
             font-family: inherit;
         }
-        .form-input:focus, .form-select:focus {
+
+        .form-input:focus,
+        .form-select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
         }
@@ -133,6 +152,7 @@
             gap: 12px;
             margin-top: 35px;
         }
+
         .btn {
             flex: 1;
             padding: 12px 24px;
@@ -143,24 +163,72 @@
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
         }
-        .btn:active { transform: scale(0.98); }
-        .btn-primary { background-color: var(--primary-color); color: white; }
-        .btn-primary:hover { background-color: #a1a1a1; }
-        .btn-secondary { background-color: #e9ecef; color: #495057; }
-        .btn-secondary:hover { background-color: #dee2e6; }
-        .btn:disabled { background-color: #adb5bd; cursor: not-allowed; opacity: 0.7; }
 
-        .hidden { display: none !important; }
-        .error-text { color: var(--error-color); font-size: 13px; margin-top: 6px; display: none; }
-        .status-message { text-align: center; color: #6c757d; font-size: 16px; line-height: 1.6; }
-        #form-status { margin-top: 25px; text-align: center; font-weight: 500; }
-        .status-success { color: #28a745; }
-        .status-error { color: var(--error-color); }
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #a1a1a1;
+        }
+
+        .btn-secondary {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .btn-secondary:hover {
+            background-color: #dee2e6;
+        }
+
+        .btn:disabled {
+            background-color: #adb5bd;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .error-text {
+            color: var(--error-color);
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .status-message {
+            text-align: center;
+            color: #6c757d;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        #form-status {
+            margin-top: 25px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .status-success {
+            color: #28a745;
+        }
+
+        .status-error {
+            color: var(--error-color);
+        }
 
         #final-success-container {
             text-align: center;
             padding: 40px 20px;
         }
+
         #final-success-container h1 {
             color: #28a745;
             font-size: 28px;
@@ -168,10 +236,12 @@
             margin-top: 0;
             margin-bottom: 15px;
         }
+
         #final-success-container p {
             font-size: 18px;
             color: #495057;
         }
+
         .success-icon {
             color: #28a745;
             font-size: 60px;
@@ -190,7 +260,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); 
+            background-color: rgba(0, 0, 0, 0.6);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -234,581 +304,598 @@
             font-weight: 600;
             transition: background-color 0.2s;
         }
+
         .popup-btn:hover {
             background-color: #a1a1a1;
         }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes scaleIn { from { transform: scale(0.9); } to { transform: scale(1); } }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+            }
+
+            to {
+                transform: scale(1);
+            }
+        }
     </style>
 </head>
+
 <body oncontextmenu="return false;"></body>
 
-    <div id="warning-popup" class="popup-overlay hidden">
-        <div class="popup-content">
-            <div style="font-size: 40px; margin-bottom: 10px;">⚠️</div>
-            <h3>คำแนะนำ</h3>
-            <p>ห้ามปิดหน้าจอในระหว่างนี้<br>โปรดรอจนกว่าการลงทะเบียนเสร็จสมบูรณ์</p>
-            <button class="btn popup-btn" onclick="closeWarningPopup()">OK</button>
-        </div>
+<div id="warning-popup" class="popup-overlay hidden">
+    <div class="popup-content">
+        <div style="font-size: 40px; margin-bottom: 10px;">⚠️</div>
+        <h3>คำแนะนำ</h3>
+        <p>ห้ามปิดหน้าจอในระหว่างนี้<br>โปรดรอจนกว่าการลงทะเบียนเสร็จสมบูรณ์</p>
+        <button class="btn popup-btn" onclick="closeWarningPopup()">OK</button>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="header-section">
+        <img src="https://img5.pic.in.th/file/secure-sv1/CityLawEnforcement_origin_tranparent.png" alt="Logo"
+            class="header-logo">
+
+        <h1 class="header-title">
+            ลงทะเบียนการปฏิบัติหน้าที่ตามแผนรักษาความปลอดภัย ความเป็นระเบียบเรียบร้อย
+            อำนวยการจราจรและอำนวยความสะดวกประชาชนงานกาชาด ประจำปี พ.ศ. 2568
+        </h1>
     </div>
 
-    <div class="container">
-
-        <div class="header-section">
-            <img src="https://img5.pic.in.th/file/secure-sv1/CityLawEnforcement_origin_tranparent.png" alt="Logo" class="header-logo">
-            
-            <h1 class="header-title">
-                ลงทะเบียนการปฏิบัติหน้าที่ตามแผนดูแลความเป็นระเบียบเรียบร้อย และอำนวยความสะดวกงานพระบรมศพ สมเด็จพระนางเจ้าสิริกิติ์ พระบรมราชินีนาถ พระบรมราชชนนีพันปีหลวง
-            </h1>
-        </div>
-        
-        <div id="loading-container" class="status-message">
-            <p>กำลังตรวจสอบตำแหน่งของคุณ...</p>
-            <p><small>กรุณากด "Allow" หรือ "อนุญาต" เพื่อดำเนินการต่อ</small></p>
-        </div>
-
-        <div id="error-container" class="hidden" style="text-align: center;">
-            <h2 style="color: var(--error-color);">เข้าใช้งานไม่ได้</h2>
-            <p id="error-message"></p>
-        </div>
-
-        <div id="main-app-container" class="hidden">
-            <form id="main-form" onsubmit="return false;">
-                
-                <div id="step1">
-                    <h2>ข้อมูลทั่วไป</h2>
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">ชื่อ - สกุล <span class="required-mark">*</span></label>
-                            <input type="text" id="input-name" class="form-input" placeholder="กรอกชื่อ-นามสกุล" oninput="this.value = this.value.replace(/[0-9]/g, '');">
-                            <div class="error-text">กรุณาระบุชื่อ-นามสกุล</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">หมายเลขโทรศัพท์ <span class="required-mark">*</span></label>
-                            <input type="tel" id="input-phone" class="form-input" placeholder="เช่น 08x-xxxxxxx" oninput="this.value = this.value.replace(/[^0-9]/g, '');" maxlength="10">
-                            <div class="error-text">กรุณาระบุหมายเลขโทรศัพท์</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">ตำแหน่ง <span class="required-mark">*</span></label>
-                            <select id="input-position" class="form-select">
-                                <option value="">- กรุณาเลือก -</option>
-                                <option value="1">พนักงานเทศกิจ</option>
-                                <option value="2">พนักงานเทศกิจ ส1</option>
-                                <option value="3">พนักงานเทศกิจ ส2</option>
-                                <option value="4">พนักงานเทศกิจ ส3</option>
-                                <option value="5">พนักงานขับรถ ส.1</option>
-                                <option value="6">พนักงานขับรถ ส.2</option>
-                                <option value="7">พนักงานเทศกิจปฏิบัติงาน</option>
-                                <option value="8">พนักงานเทศกิจชำนาญงาน</option>
-                                <option value="9">พนักงานเทศกิจอาวุโส</option>
-                                <option value="10">นิติกรปฏิบัติการ</option>
-                                <option value="11">นิติกรชำนาญการ</option>
-                                <option value="12">เจ้าพนักงานเทศกิจปฏิบัติการ</option>
-                                <option value="13">เจ้าพนักงานเทศกิจชำนาญการ</option>
-                                <option value="14">เจ้าพนักงานเทศกิจชำนาญการพิเศษ</option>
-                                <option value="15">ผู้อำนวยการส่วนตรวจและบังคับการ 1</option>
-                                <option value="16">ผู้อำนวยการส่วนตรวจและบังคับการ 2</option>
-                                <option value="17">ผู้อำนวยการส่วนตรวจและบังคับการ 3</option>
-                                <option value="18">ผู้อำนวยการกองนิติการและบังคับคดี</option>
-                                <option value="19">ผู้อำนวยการกองโนบายและแผนงาน</option>
-                                <option value="20">เลขานุการสำนักเทศกิจ</option>
-                                <option value="21">ผู้อำนวยการสำนักงานตรวจและบังคับกาาร</option>
-                                <option value="22">รองผู้อำนวยการ</option>
-                                <option value="23">ผู้อำนวยการสำนักเทศกิจ</option>
-                            </select>
-                            <div class="error-text">กรุณาเลือกตำแหน่ง</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">หน่วยงาน <span class="required-mark">*</span></label>
-                            <select id="input-department" class="form-select">
-                                <option value="">- กรุณาเลือก -</option>
-                                <option value="CLE">สำนักเทศกิจ</option>
-                                <option value="DIS">สำนักงานเขต</option>
-                            </select>
-                            <div class="error-text">กรุณาเลือกหน่วยงาน</div>
-                        </div>
-                    </div>
-
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-primary" onclick="validateAndNextStep()">ถัดไป</button>
-                    </div>
-                </div>
-
-                <div id="step2-cle" class="hidden">
-                    <h2>สำนักเทศกิจ</h2>
-                    <div class="form-group">
-                        <label class="form-label">สำนักงานตรวจและบังคับการ <span class="required-mark">*</span></label>
-                        <select id="input-cle-role" class="form-select">
-                            <option value="">- กรุณาเลือก -</option>
-                            <option value="1">ส่วนตรวจและบังคับการ 1</option>
-                            <option value="2">ส่วนตรวจและบังคับการ 2</option>
-                            <option value="3">ส่วนตรวจและบังคับการ 3</option>
-                            <option value="4">สำนักงานตรวจและบังคับการ</option>
-                            <option value="5">กลุ่มงานผู้ตรวจการเทศกิจ</option>
-                            <option value="6">สำนักงานเลขานุการ</option>
-                            <option value="7">กองนโยบายและแผนงาน</option>
-                            <option value="8">กองนิติการและบังคับคดี</option>
-                            <option value="9">รองผู้อำนวยการสำนักเทศกิจ</option>
-                            <option value="10">ผู้อำนวยการสำนักเทศกิจ</option>
-                        </select>
-                        <div class="error-text">กรุณาเลือกสำนัก</div>
-                    </div>
-                    
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-secondary" onclick="goBackToStep1()">ย้อนกลับ</button>
-                        <button type="button" class="btn btn-primary" onclick="validateAndNextStep2('CLE')">ถัดไป</button>
-                    </div>
-                </div>
-
-                <div id="step2-dis" class="hidden">
-                    <h2>สำนักงานเขต</h2>
-                    <div class="form-group">
-                        <label class="form-label">เขต <span class="required-mark">*</span></label>
-                        <select id="input-dis-role" class="form-select">
-                            <option value="">- กรุณาเลือก -</option>
-                            <option value="1">คลองสาน</option>
-                            <option value="2">คลองสามวา</option>
-                            <option value="3">คลองเตย</option>
-                            <option value="4">คันนายาว</option>
-                            <option value="5">จตุจักร</option>
-                            <option value="6">จอมทอง</option>
-                            <option value="7">ดอนเมือง</option>
-                            <option value="8">ดินแดง</option>
-                            <option value="9">ดุสิต</option>
-                            <option value="10">ตลิ่งชัน</option>
-                            <option value="11">ทวีวัฒนา</option>
-                            <option value="12">ทุ่งครุ</option>
-                            <option value="13">ธนบุรี</option>
-                            <option value="14">บึงกุ่ม</option>
-                            <option value="15">บางกะปิ</option>
-                            <option value="16">บางกอกใหญ่</option>
-                            <option value="17">บางกอกน้อย</option>
-                            <option value="18">บางขุนเทียน</option>
-                            <option value="19">บางคอแหลม</option>
-                            <option value="20">บางเขน</option>
-                            <option value="21">บางแค</option>
-                            <option value="22">บางนา</option>
-                            <option value="23">บางพลัด</option>
-                            <option value="24">บางบอน</option>
-                            <option value="25">บางรัก</option>
-                            <option value="26">บางซื่อ</option>
-                            <option value="27">ประเวศ</option>
-                            <option value="28">ปทุมวัน</option>
-                            <option value="29">ป้อมปราบศัตรูพ่าย</option>
-                            <option value="30">พญาไท</option>
-                            <option value="31">พระนคร</option>
-                            <option value="32">พระโขนง</option>
-                            <option value="33">ภาษีเจริญ</option>
-                            <option value="34">มีนบุรี</option>
-                            <option value="35">ยานนาวา</option>
-                            <option value="36">ราชเทวี</option>
-                            <option value="37">ราษฎร์บูรณะ</option>
-                            <option value="38">ลาดกระบัง</option>
-                            <option value="39">ลาดพร้าว</option>
-                            <option value="40">วังทองหลาง</option>
-                            <option value="41">วัฒนา</option>
-                            <option value="42">สาทร</option>
-                            <option value="43">สายไหม</option>
-                            <option value="44">สัมพันธวงศ์</option>
-                            <option value="45">สวนหลวง</option>
-                            <option value="46">สะพานสูง</option>
-                            <option value="47">หลักสี่</option>
-                            <option value="48">หนองจอก</option>
-                            <option value="49">หนองแขม</option>
-                            <option value="50">ห้วยขวาง</option>
-                        </select>
-                        <div class="error-text">กรุณาเลือกเขต</div>
-                    </div>
-
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-secondary" onclick="goBackToStep1()">ย้อนกลับ</button>
-                        <button type="button" class="btn btn-primary" onclick="validateAndNextStep2('DIS')">ถัดไป</button>
-                    </div>
-                </div>
-
-                <div id="step3-duty-time" class="hidden">
-                    <h2>ช่วงเวลาปฏิบัติหน้าที่</h2>
-                    <div class="form-group">
-                        <label class="form-label">ช่วงเวลา <span class="required-mark">*</span></label>
-                        <select id="input-time-range" class="form-select">
-                            <option value="">- กรุณาเลือก -</option>
-                            <option value="1">08:00 น. - 16:00 น.</option>
-                            <option value="2">16:00 น. - 00:00 น.</option>
-                        </select>
-                        <div class="error-text">กรุณาเลือกช่วงเวลา</div>
-                    </div>
-
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-secondary" onclick="goBackToStep2()">ย้อนกลับ</button>
-                        <button type="button" class="btn btn-primary" onclick="validateAndNextStep3()">ถัดไป</button>
-                    </div>
-                </div>
-
-                <div id="step4-extraction-point" class="hidden">
-                    <h2>จุดสกัด</h2>
-                    <div class="form-group">
-                        <label class="form-label">พื้นที่รับผิดชอบ <span class="required-mark">*</span></label>
-                        <select id="input-area-responsible" class="form-select">
-                            <option value="">- กรุณาเลือก -</option>
-                            <option value="1">จุดสกัดที่ 1 กองอำนวยการร่วมเทศกิจกรุงเทพมหานคร</option>
-                            <option value="2">จุดสกัดที่ 1 ศูนย์บริการรถพลังงานไฟฟ้า (รถกอล์ฟ)</option>
-                            <option value="3">จุดสกัดที่ 1 ศูนย์สื่อสาร</option>
-                            <option value="4">จุดสกัดที่ 2 จุดพักคอยจุดที่ 1 รวมประตูทางเข้า-ออก ถนนผ่ากลางฝั่ง ม.ธรรมศาสตร์ และทางลงอุโมงค์ทางรอดถนนหน้าพระลาน</option>
-                            <option value="5">จุดสกัดที่ 3 จุดพักคอยจุดที่ 2</option>
-                            <option value="6">จุดสกัดที่ 4 จุดพักคอยจุดที่ 3 ข้างโรงครัวพระราชทาน</option>
-                            <option value="7">จุดสกัดที่ 5 ถนนหน้าพระธาตุ ตั้งแต่แยกพระจันทร์ ถึง พิพิธภัณฑ์สถานแห่งชาติ ทั้งสองฝั่ง</option>
-                            <option value="8">จุดสกัดที่ 6 ถนนหน้าพระธาตุตั้งแต่แยกพระจันทร์ ถึง ถนนหน้าพระลาน ทั้งสองฝั่งและสามเหลี่ยม หน้าพระลาน</option>
-                            <option value="9">จุดสกัดที่ 7 บริเวณท่าช้าง ถนนมหาราช และให้รวมถึงสามแยกท่าช้าง</option>
-                            <option value="10">จุดสกัดที่ 8 ถนนมหาราช ตั้งแต่ประตูเทวาภิรมย์ ถึง สามแยกถนนหน้าพระลาน ทั้งสองฝั่ง</option>
-                            <option value="11">จุดสกัดที่ 9 ถนนหน้าพระลาน ตลอดสาย</option>
-                            <option value="12">จุดสกัดที่ 10 ถนนสนามไชย และถนนราชดำเนินใน ตั้งแต่ ถนนกัลยาณไมตรีถึง ประตู 3 ศาลฎีกา ทั้งสองฝั่ง</option>
-                            <option value="13">จุดสกัดที่ 11 ถนนราชดำเนินใน ตั้งแต่ประตู 3 ศาลฎีกา ถึงพระแม่ธรณีบีบมวยผม ทั้งสองฝั่ง</option>
-                            <option value="14">จุดสกัดที่ 12 ดูแลความเรียบร้อยโรงครัวพระราชทาน ในบริเวณสนามหลวงฝั่ง ม.ธรรมศาสตร์</option>
-                        </select>
-                        <div class="error-text">กรุณาเลือกจุดสกัด</div>
-                    </div>
-
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-secondary" onclick="goBackToStep3()">ย้อนกลับ</button>
-                        <button type="button" class="btn btn-primary" onclick="finalSubmit()">ส่งข้อมูล</button>
-                    </div>
-                </div>
-
-                <div id="form-status"></div>
-
-            </form>
-        </div>
-
-        <div id="final-success-container" class="hidden" style="text-align: center; padding: 40px 0;">
-            <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 20px;">
-                <circle cx="50" cy="50" r="48" stroke="var(--success-color)" stroke-width="4"/>
-                <path d="M30 50 L45 65 L70 35" stroke="var(--success-color)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <h2 style="color: var(--success-color); border: none; padding: 0; font-size: 28px; font-weight: 700;">ลงทะเบียนเสร็จสมบูรณ์</h2>
-            <p class="status-message" style="font-size: 18px;">ระบบได้บันทึกข้อมูลของคุณเรียบร้อยแล้ว</p>
-        </div>
-
+    <div id="loading-container" class="status-message">
+        <p>กำลังตรวจสอบตำแหน่งของคุณ...</p>
+        <p><small>กรุณากด "Allow" หรือ "อนุญาต" เพื่อดำเนินการต่อ</small></p>
     </div>
 
-    <script>
-        const TARGET_LAT = 13.755956;
-        const TARGET_LNG = 100.492430;
-        const MAX_RADIUS_M = 500;
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwOsjwaI-NCDKPjX-HItk2ZuNrGWt7hUxThddoNiav65WPf5VSr-KyJK3crvaFUE9zu/exec";
+    <div id="error-container" class="hidden" style="text-align: center;">
+        <h2 style="color: var(--error-color);">เข้าใช้งานไม่ได้</h2>
+        <p id="error-message"></p>
+    </div>
 
-        let currentUserCoords = null;
-        let departmentType = null;
-        let userDeviceId = null;
+    <div id="main-app-container" class="hidden">
+        <form id="main-form" onsubmit="return false;">
 
-        window.onload = () => {
-            userDeviceId = getOrCreateDeviceId();
-            checkGeolocation();
-        };
+            <div id="step1">
+                <h2>ข้อมูลทั่วไป</h2>
 
-        function getOrCreateDeviceId()
-        {
-            let deviceId = localStorage.getItem('device_unique_id');
-            if(!deviceId)
-            {
-                if(typeof crypto !== 'undefined' && crypto.randomUUID)
-                {
-                    deviceId = crypto.randomUUID();
-                }
-                else
-                {
-                    deviceId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-                        return v.toString(16);
-                    });
-                }
-                localStorage.setItem('device_unique_id', deviceId);
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">ชื่อ - สกุล <span class="required-mark">*</span></label>
+                        <input type="text" id="input-name" class="form-input" placeholder="กรอกชื่อ-นามสกุล"
+                            oninput="this.value = this.value.replace(/[0-9]/g, '');">
+                        <div class="error-text">กรุณาระบุชื่อ-นามสกุล</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">หมายเลขโทรศัพท์ <span class="required-mark">*</span></label>
+                        <input type="tel" id="input-phone" class="form-input" placeholder="เช่น 08x-xxxxxxx"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '');" maxlength="10">
+                        <div class="error-text">กรุณาระบุหมายเลขโทรศัพท์</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">ตำแหน่ง <span class="required-mark">*</span></label>
+                        <select id="input-position" class="form-select">
+                            <option value="">- กรุณาเลือก -</option>
+                            <option value="1">พนักงานเทศกิจ</option>
+                            <option value="2">พนักงานเทศกิจ ส1</option>
+                            <option value="3">พนักงานเทศกิจ ส2</option>
+                            <option value="4">พนักงานเทศกิจ ส3</option>
+                            <option value="5">พนักงานขับรถ ส.1</option>
+                            <option value="6">พนักงานขับรถ ส.2</option>
+                            <option value="7">พนักงานเทศกิจปฏิบัติงาน</option>
+                            <option value="8">พนักงานเทศกิจชำนาญงาน</option>
+                            <option value="9">พนักงานเทศกิจอาวุโส</option>
+                            <option value="10">นิติกรปฏิบัติการ</option>
+                            <option value="11">นิติกรชำนาญการ</option>
+                            <option value="12">เจ้าพนักงานเทศกิจปฏิบัติการ</option>
+                            <option value="13">เจ้าพนักงานเทศกิจชำนาญการ</option>
+                            <option value="14">เจ้าพนักงานเทศกิจชำนาญการพิเศษ</option>
+                            <option value="15">ผู้อำนวยการส่วนตรวจและบังคับการ 1</option>
+                            <option value="16">ผู้อำนวยการส่วนตรวจและบังคับการ 2</option>
+                            <option value="17">ผู้อำนวยการส่วนตรวจและบังคับการ 3</option>
+                            <option value="18">ผู้อำนวยการกองนิติการและบังคับคดี</option>
+                            <option value="19">ผู้อำนวยการกองโนบายและแผนงาน</option>
+                            <option value="20">เลขานุการสำนักเทศกิจ</option>
+                            <option value="21">ผู้อำนวยการสำนักงานตรวจและบังคับกาาร</option>
+                            <option value="22">รองผู้อำนวยการ</option>
+                            <option value="23">ผู้อำนวยการสำนักเทศกิจ</option>
+                        </select>
+                        <div class="error-text">กรุณาเลือกตำแหน่ง</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">หน่วยงาน <span class="required-mark">*</span></label>
+                        <select id="input-department" class="form-select">
+                            <option value="">- กรุณาเลือก -</option>
+                            <option value="CLE">สำนักเทศกิจ</option>
+                            <option value="DIS">สำนักงานเขต</option>
+                        </select>
+                        <div class="error-text">กรุณาเลือกหน่วยงาน</div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="validateAndNextStep()">ถัดไป</button>
+                </div>
+            </div>
+
+            <div id="step2-cle" class="hidden">
+                <h2>สำนักเทศกิจ</h2>
+                <div class="form-group">
+                    <label class="form-label">สำนักงานตรวจและบังคับการ <span class="required-mark">*</span></label>
+                    <select id="input-cle-role" class="form-select">
+                        <option value="">- กรุณาเลือก -</option>
+                        <option value="1">ส่วนตรวจและบังคับการ 1</option>
+                        <option value="2">ส่วนตรวจและบังคับการ 2</option>
+                        <option value="3">ส่วนตรวจและบังคับการ 3</option>
+                        <option value="4">สำนักงานตรวจและบังคับการ</option>
+                        <option value="5">กลุ่มงานผู้ตรวจการเทศกิจ</option>
+                        <option value="6">สำนักงานเลขานุการ</option>
+                        <option value="7">กองนโยบายและแผนงาน</option>
+                        <option value="8">กองนิติการและบังคับคดี</option>
+                        <option value="9">รองผู้อำนวยการสำนักเทศกิจ</option>
+                        <option value="10">ผู้อำนวยการสำนักเทศกิจ</option>
+                    </select>
+                    <div class="error-text">กรุณาเลือกสำนัก</div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="goBackToStep1()">ย้อนกลับ</button>
+                    <button type="button" class="btn btn-primary" onclick="validateAndNextStep2('CLE')">ถัดไป</button>
+                </div>
+            </div>
+
+            <div id="step2-dis" class="hidden">
+                <h2>สำนักงานเขต</h2>
+                <div class="form-group">
+                    <label class="form-label">เขต <span class="required-mark">*</span></label>
+                    <select id="input-dis-role" class="form-select">
+                        <option value="">- กรุณาเลือก -</option>
+                        <option value="1">คลองสาน</option>
+                        <option value="2">คลองสามวา</option>
+                        <option value="3">คลองเตย</option>
+                        <option value="4">คันนายาว</option>
+                        <option value="5">จตุจักร</option>
+                        <option value="6">จอมทอง</option>
+                        <option value="7">ดอนเมือง</option>
+                        <option value="8">ดินแดง</option>
+                        <option value="9">ดุสิต</option>
+                        <option value="10">ตลิ่งชัน</option>
+                        <option value="11">ทวีวัฒนา</option>
+                        <option value="12">ทุ่งครุ</option>
+                        <option value="13">ธนบุรี</option>
+                        <option value="14">บึงกุ่ม</option>
+                        <option value="15">บางกะปิ</option>
+                        <option value="16">บางกอกใหญ่</option>
+                        <option value="17">บางกอกน้อย</option>
+                        <option value="18">บางขุนเทียน</option>
+                        <option value="19">บางคอแหลม</option>
+                        <option value="20">บางเขน</option>
+                        <option value="21">บางแค</option>
+                        <option value="22">บางนา</option>
+                        <option value="23">บางพลัด</option>
+                        <option value="24">บางบอน</option>
+                        <option value="25">บางรัก</option>
+                        <option value="26">บางซื่อ</option>
+                        <option value="27">ประเวศ</option>
+                        <option value="28">ปทุมวัน</option>
+                        <option value="29">ป้อมปราบศัตรูพ่าย</option>
+                        <option value="30">พญาไท</option>
+                        <option value="31">พระนคร</option>
+                        <option value="32">พระโขนง</option>
+                        <option value="33">ภาษีเจริญ</option>
+                        <option value="34">มีนบุรี</option>
+                        <option value="35">ยานนาวา</option>
+                        <option value="36">ราชเทวี</option>
+                        <option value="37">ราษฎร์บูรณะ</option>
+                        <option value="38">ลาดกระบัง</option>
+                        <option value="39">ลาดพร้าว</option>
+                        <option value="40">วังทองหลาง</option>
+                        <option value="41">วัฒนา</option>
+                        <option value="42">สาทร</option>
+                        <option value="43">สายไหม</option>
+                        <option value="44">สัมพันธวงศ์</option>
+                        <option value="45">สวนหลวง</option>
+                        <option value="46">สะพานสูง</option>
+                        <option value="47">หลักสี่</option>
+                        <option value="48">หนองจอก</option>
+                        <option value="49">หนองแขม</option>
+                        <option value="50">ห้วยขวาง</option>
+                    </select>
+                    <div class="error-text">กรุณาเลือกเขต</div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="goBackToStep1()">ย้อนกลับ</button>
+                    <button type="button" class="btn btn-primary" onclick="validateAndNextStep2('DIS')">ถัดไป</button>
+                </div>
+            </div>
+
+            <div id="step3-duty-time" class="hidden">
+                <h2>ช่วงเวลาปฏิบัติหน้าที่</h2>
+                <div class="form-group">
+                    <label class="form-label">ช่วงเวลา <span class="required-mark">*</span></label>
+                    <select id="input-time-range" class="form-select">
+                        <option value="">- กรุณาเลือก -</option>
+                        <option value="1">08:00 น. - 16:00 น.</option>
+                        <option value="2">16:00 น. - 00:00 น.</option>
+                    </select>
+                    <div class="error-text">กรุณาเลือกช่วงเวลา</div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="goBackToStep2()">ย้อนกลับ</button>
+                    <button type="button" class="btn btn-primary" onclick="validateAndNextStep3()">ถัดไป</button>
+                </div>
+            </div>
+
+            <div id="step4-extraction-point" class="hidden">
+                <h2>จุดสกัด</h2>
+                <div class="form-group">
+                    <label class="form-label">พื้นที่รับผิดชอบ <span class="required-mark">*</span></label>
+                    <select id="input-area-responsible" class="form-select">
+                        <option value="">- กรุณาเลือก -</option>
+                        <option value="1">จุดที่ 1 ประจำกองอำนวยการจัดงานกาชาด (อาคารมินิเธียเตอร์)</option>
+                        <option value="2">จุดที่ 2
+                            ดูแลความเป็นระเบียบเรียบร้อยบริเวณรอบสวนลุมพินีและลานพระบรมราชานุสาวรีย์รัชกาลที่ 6</option>
+                        <option value="3">จุดที่ 3 ดูแลความเรียบร้อยจุดจอดรถใต้สะพานไทย - เบลเยี่ยม</option>
+                        <option value="4">จุดที่ 4 ดูแลความเรียบร้อยจุดจอดรถใต้สะพานไทย - ญี่ปุ่น</option>
+                        <option value="5">จุดที่ 5 ดูแลความเป็นระเบียบเรียบร้อยร้านภายในงานและร้านของกรุงเทพมหานคร
+                        </option>
+                        <option value="6">จุดที่ 6 ประจำประตู ทางเข้า - ออกประตู 1 ถนนวิทยุ</option>
+                        <option value="7">จุดที่ 7 ประจำประตู ทางเข้า - ออกประตู 2 แยกวิทยุ</option>
+                        <option value="8">จุดที่ 8 ประจำประตู ทางเข้า - ออกประตู 3 ถนนพระรามที่ 4</option>
+                        <option value="9">จุดที่ 9 ประจำประตู ทางเข้า - ออกประตู 4 หลังพระบรมราชานุสาวรีย์รัชกาลที่ 6
+                        </option>
+                        <option value="10">จุดที่ 10 ตั้งแต่ประตูทางเข้า - ออก ประตู 2 ถึง ศาลาการไฟฟ้าสามเสน</option>
+                        <option value="11">จุดที่ 11 ตั้งแต่ ประตูทางเข้า - ออก ประตู 1 ถึง
+                            แยกทางวิ่งเข้าศาลาการไฟฟ้าสามเสน </option>
+                        <option value="12">จุดที่ 12 ตั้งแต่ประตูทางเข้า - ออก ประตู 2 แยกวิทยุ ถึง
+                            แยกศาลาการไฟฟ้าสามเสน</option>
+                        <option value="13">จุดที่ 13 ตั้งแต่แยกประตูทางเข้า - ออก ประตู 4 ถึงแยกศาลาเฉลิมพระเกียรติ 6
+                            รอบ</option>
+                        <option value="14">จุดที่ 14 ตั้งแต่แยกประตูทางเข้า - ออก ประตู 4 ถึงศาลาแปดเหลี่ยม</option>
+                    </select>
+                    <div class="error-text">กรุณาเลือกจุดสกัด</div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="goBackToStep3()">ย้อนกลับ</button>
+                    <button type="button" class="btn btn-primary" onclick="finalSubmit()">ส่งข้อมูล</button>
+                </div>
+            </div>
+
+            <div id="form-status"></div>
+
+        </form>
+    </div>
+
+    <div id="final-success-container" class="hidden" style="text-align: center; padding: 40px 0;">
+        <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"
+            style="margin-bottom: 20px;">
+            <circle cx="50" cy="50" r="48" stroke="var(--success-color)" stroke-width="4" />
+            <path d="M30 50 L45 65 L70 35" stroke="var(--success-color)" stroke-width="6" stroke-linecap="round"
+                stroke-linejoin="round" />
+        </svg>
+        <h2 style="color: var(--success-color); border: none; padding: 0; font-size: 28px; font-weight: 700;">
+            ลงทะเบียนเสร็จสมบูรณ์</h2>
+        <p class="status-message" style="font-size: 18px;">ระบบได้บันทึกข้อมูลของคุณเรียบร้อยแล้ว</p>
+    </div>
+
+</div>
+
+<script>
+    const TARGET_LAT = 13.7301775;
+    const TARGET_LNG = 100.5382131;
+    const MAX_RADIUS_M = 500;
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwNArUh-h5BN1ABRr2GHl93GgeBmmvlPs4Ep_d8iMgS8OB8f5hvb19fkZb2j8-xZRfZDA/exec";
+
+    let currentUserCoords = null;
+    let departmentType = null;
+    let userDeviceId = null;
+
+    window.onload = () => {
+        userDeviceId = getOrCreateDeviceId();
+        checkGeolocation();
+    };
+
+    function getOrCreateDeviceId() {
+        let deviceId = localStorage.getItem('device_unique_id');
+        if (!deviceId) {
+            if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+                deviceId = crypto.randomUUID();
             }
-            return deviceId;
+            else {
+                deviceId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+            localStorage.setItem('device_unique_id', deviceId);
         }
+        return deviceId;
+    }
 
-        function showWarningPopup() {
-            document.getElementById('warning-popup').classList.remove('hidden');
-        }
+    function showWarningPopup() {
+        document.getElementById('warning-popup').classList.remove('hidden');
+    }
 
-        function closeWarningPopup() {
-            document.getElementById('warning-popup').classList.add('hidden');
-        }
+    function closeWarningPopup() {
+        document.getElementById('warning-popup').classList.add('hidden');
+    }
 
-        function checkGeolocation() {
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(onLocationSuccess, onLocationError,
+    function checkGeolocation() {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(onLocationSuccess, onLocationError,
                 {
                     enableHighAccuracy: true,
                     timeout: 10000,
                     maximumAge: 0
                 });
-            } else {
-                showErrorScreen("อุปกรณ์ของคุณไม่รองรับการระบุตำแหน่ง");
-            }
+        } else {
+            showErrorScreen("อุปกรณ์ของคุณไม่รองรับการระบุตำแหน่ง");
         }
+    }
 
-        function onLocationSuccess(position) {
-            const userLat = position.coords.latitude;
-            const userLng = position.coords.longitude;
-            currentUserCoords = `${userLat}, ${userLng}`;
+    function onLocationSuccess(position) {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
+        currentUserCoords = `${userLat}, ${userLng}`;
 
-            const distance = getDistanceFromLatLonInM(userLat, userLng, TARGET_LAT, TARGET_LNG);
+        const distance = getDistanceFromLatLonInM(userLat, userLng, TARGET_LAT, TARGET_LNG);
 
-            if (distance <= MAX_RADIUS_M) {
-                document.getElementById('loading-container').classList.add('hidden');
-                document.getElementById('main-app-container').classList.remove('hidden');
-            } else {
-                showErrorScreen(`คุณอยู่นอกพื้นที่ที่กำหนดจากจุดเช็คอิน)`);
-            }
-        }
-
-        function onLocationError(error) {
-            let msg = "ไม่สามารถระบุตำแหน่งได้";
-            if (error.code === 1) msg = "กรุณาอนุญาตให้เข้าถึงตำแหน่ง (Allow Location Access)";
-            else if (error.code === 2) msg = "สัญญาณ GPS ไม่เสถียร กรุณาลองใหม่";
-            else if (error.code === 3) msg = "หมดเวลาการเชื่อมต่อ GPS";
-            showErrorScreen(msg);
-        }
-
-        function showErrorScreen(msg) {
+        if (distance <= MAX_RADIUS_M) {
             document.getElementById('loading-container').classList.add('hidden');
-            document.getElementById('main-app-container').classList.add('hidden');
-            document.getElementById('error-container').classList.remove('hidden');
-            document.getElementById('error-message').textContent = msg;
+            document.getElementById('main-app-container').classList.remove('hidden');
+        } else {
+            showErrorScreen(`คุณอยู่นอกพื้นที่ที่กำหนดจากจุดเช็คอิน)`);
         }
+    }
 
-        function validateAndNextStep() {
-            const name = document.getElementById('input-name');
-            const phone = document.getElementById('input-phone');
-            const position = document.getElementById('input-position');
-            const department = document.getElementById('input-department');
+    function onLocationError(error) {
+        let msg = "ไม่สามารถระบุตำแหน่งได้";
+        if (error.code === 1) msg = "กรุณาอนุญาตให้เข้าถึงตำแหน่ง (Allow Location Access)";
+        else if (error.code === 2) msg = "สัญญาณ GPS ไม่เสถียร กรุณาลองใหม่";
+        else if (error.code === 3) msg = "หมดเวลาการเชื่อมต่อ GPS";
+        showErrorScreen(msg);
+    }
 
-            resetErrors([name, phone, position, department]);
+    function showErrorScreen(msg) {
+        document.getElementById('loading-container').classList.add('hidden');
+        document.getElementById('main-app-container').classList.add('hidden');
+        document.getElementById('error-container').classList.remove('hidden');
+        document.getElementById('error-message').textContent = msg;
+    }
 
-            let isValid = true;
-            if (!name.value.trim()) { showFieldError(name); isValid = false; }
-            if (!phone.value.trim()) { showFieldError(phone); isValid = false; }
-            if (position.value === "") { showFieldError(position); isValid = false; }
-            if (department.value === "") { showFieldError(department); isValid = false; }
+    function validateAndNextStep() {
+        const name = document.getElementById('input-name');
+        const phone = document.getElementById('input-phone');
+        const position = document.getElementById('input-position');
+        const department = document.getElementById('input-department');
 
-            if (!isValid) return;
+        resetErrors([name, phone, position, department]);
 
-            document.getElementById('step1').classList.add('hidden');
+        let isValid = true;
+        if (!name.value.trim()) { showFieldError(name); isValid = false; }
+        if (!phone.value.trim()) { showFieldError(phone); isValid = false; }
+        if (position.value === "") { showFieldError(position); isValid = false; }
+        if (department.value === "") { showFieldError(department); isValid = false; }
 
-            if (department.value === "CLE") {
-                document.getElementById('step2-cle').classList.remove('hidden');
-            } else if (department.value === "DIS") {
-                document.getElementById('step2-dis').classList.remove('hidden');
+        if (!isValid) return;
+
+        document.getElementById('step1').classList.add('hidden');
+
+        if (department.value === "CLE") {
+            document.getElementById('step2-cle').classList.remove('hidden');
+        } else if (department.value === "DIS") {
+            document.getElementById('step2-dis').classList.remove('hidden');
+        }
+    }
+
+    function validateAndNextStep2(deptType) {
+        let isValidStep2 = true;
+        departmentType = deptType;
+
+        if (deptType === 'CLE') {
+            const cityLawEnforcement = document.getElementById('input-cle-role');
+            resetErrors([cityLawEnforcement]);
+            if (cityLawEnforcement.value === "") {
+                showFieldError(cityLawEnforcement);
+                isValidStep2 = false;
+            }
+        } else if (deptType === 'DIS') {
+            const District = document.getElementById('input-dis-role');
+            resetErrors([District]);
+            if (District.value === "") {
+                showFieldError(District); isValidStep2 = false;
             }
         }
 
-        function validateAndNextStep2(deptType)
-        {
-            let isValidStep2 = true;
-            departmentType = deptType;
+        if (!isValidStep2) return;
 
-            if (deptType === 'CLE') {
-                const cityLawEnforcement = document.getElementById('input-cle-role');
-                resetErrors([cityLawEnforcement]);
-                if (cityLawEnforcement.value === "") 
-                { 
-                    showFieldError(cityLawEnforcement); 
-                    isValidStep2 = false; 
-                }
-            } else if (deptType === 'DIS') 
-            {
-                const District = document.getElementById('input-dis-role');
-                resetErrors([District]);
-                if (District.value === "") 
-                { 
-                    showFieldError(District); isValidStep2 = false; 
-                }
-            }
-
-            if (!isValidStep2) return;
-
-            if (deptType === "CLE") {
-                document.getElementById('step2-cle').classList.add('hidden');
-            } else if (deptType === "DIS") {
-                document.getElementById('step2-dis').classList.add('hidden');
-            }
-            document.getElementById('step3-duty-time').classList.remove('hidden');
-        }
-
-        function validateAndNextStep3()
-        {
-            let isValidStep3 = true;
-            const timeRange = document.getElementById('input-time-range');
-            resetErrors([timeRange]);
-
-            if (timeRange.value === "") 
-            { 
-                showFieldError(timeRange); 
-                return;
-            }
-
-            document.getElementById('step3-duty-time').classList.add('hidden');
-            document.getElementById('step4-extraction-point').classList.remove('hidden');
-        }
-
-        function goBackToStep1() {
+        if (deptType === "CLE") {
             document.getElementById('step2-cle').classList.add('hidden');
+        } else if (deptType === "DIS") {
             document.getElementById('step2-dis').classList.add('hidden');
-            document.getElementById('step1').classList.remove('hidden');
+        }
+        document.getElementById('step3-duty-time').classList.remove('hidden');
+    }
+
+    function validateAndNextStep3() {
+        let isValidStep3 = true;
+        const timeRange = document.getElementById('input-time-range');
+        resetErrors([timeRange]);
+
+        if (timeRange.value === "") {
+            showFieldError(timeRange);
+            return;
         }
 
-        function goBackToStep2() {
-            document.getElementById('step3-duty-time').classList.add('hidden');
-            if(departmentType === "CLE")
-                document.getElementById('step2-cle').classList.remove('hidden');
-            else if(departmentType === "DIS")
-                document.getElementById('step2-dis').classList.remove('hidden');
+        document.getElementById('step3-duty-time').classList.add('hidden');
+        document.getElementById('step4-extraction-point').classList.remove('hidden');
+    }
+
+    function goBackToStep1() {
+        document.getElementById('step2-cle').classList.add('hidden');
+        document.getElementById('step2-dis').classList.add('hidden');
+        document.getElementById('step1').classList.remove('hidden');
+    }
+
+    function goBackToStep2() {
+        document.getElementById('step3-duty-time').classList.add('hidden');
+        if (departmentType === "CLE")
+            document.getElementById('step2-cle').classList.remove('hidden');
+        else if (departmentType === "DIS")
+            document.getElementById('step2-dis').classList.remove('hidden');
+    }
+
+    function goBackToStep3() {
+        document.getElementById('step4-extraction-point').classList.add('hidden');
+        document.getElementById('step3-duty-time').classList.remove('hidden');
+    }
+
+    async function finalSubmit() {
+        let specificAnswer = "";
+        let isValidStep4 = true;
+
+        const areaResponsible = document.getElementById('input-area-responsible');
+        resetErrors([areaResponsible]);
+        if (areaResponsible.value === "") {
+            showFieldError(areaResponsible);
+            return;
         }
 
-        function goBackToStep3() {
-            document.getElementById('step4-extraction-point').classList.add('hidden');
-            document.getElementById('step3-duty-time').classList.remove('hidden');
+        if (departmentType === 'CLE') {
+            const cityLawEnforcement = document.getElementById('input-cle-role');
+            specificAnswer = cityLawEnforcement.options[cityLawEnforcement.selectedIndex]?.text || '';
+        } else if (departmentType === 'DIS') {
+            const District = document.getElementById('input-dis-role');
+            specificAnswer = District.options[District.selectedIndex]?.text || '';
         }
 
-        async function finalSubmit() {
-            let specificAnswer = "";
-            let isValidStep4 = true;
+        showWarningPopup();
+        updateStatus("กำลังส่งข้อมูล...", false);
+        disableAllButtons(true);
 
-            const areaResponsible = document.getElementById('input-area-responsible');
-            resetErrors([areaResponsible]);
-            if (areaResponsible.value === "") 
-            { 
-                showFieldError(areaResponsible); 
-                return;
-            }
+        const positionEl = document.getElementById('input-position');
+        const departmentEl = document.getElementById('input-department');
+        const timeRangeEl = document.getElementById('input-time-range');
+        const areaResponsibleEl = document.getElementById('input-area-responsible');
 
-            if (departmentType === 'CLE') {
-                const cityLawEnforcement = document.getElementById('input-cle-role');
-                specificAnswer = cityLawEnforcement.options[cityLawEnforcement.selectedIndex]?.text || '';
-            } else if (departmentType === 'DIS') 
-            {
-                const District = document.getElementById('input-dis-role');
-                specificAnswer = District.options[District.selectedIndex]?.text || '';
-            }
+        const payload = {
+            name: document.getElementById('input-name').value,
+            phone: document.getElementById('input-phone').value,
+            position: positionEl.options[positionEl.selectedIndex]?.text || '',
+            department: departmentEl.options[departmentEl.selectedIndex]?.text || '',
+            specific_answer: specificAnswer,
+            time_range: timeRangeEl.options[timeRangeEl.selectedIndex]?.text || '',
+            area_responsible: areaResponsibleEl.options[areaResponsibleEl.selectedIndex]?.text || '',
+            location: currentUserCoords,
+            device_id: userDeviceId
+        };
 
-            showWarningPopup();
-            updateStatus("กำลังส่งข้อมูล...", false);
-            disableAllButtons(true);
+        const formBody = new URLSearchParams();
+        for (const key in payload) {
+            formBody.append(key, payload[key]);
+        }
 
-            const positionEl = document.getElementById('input-position');
-            const departmentEl = document.getElementById('input-department');
-            const timeRangeEl = document.getElementById('input-time-range');
-            const areaResponsibleEl = document.getElementById('input-area-responsible');
-
-            const payload = {
-                name: document.getElementById('input-name').value,
-                phone: document.getElementById('input-phone').value,
-                position: positionEl.options[positionEl.selectedIndex]?.text || '',
-                department: departmentEl.options[departmentEl.selectedIndex]?.text || '',
-                specific_answer: specificAnswer,
-                time_range: timeRangeEl.options[timeRangeEl.selectedIndex]?.text || '',
-                area_responsible: areaResponsibleEl.options[areaResponsibleEl.selectedIndex]?.text || '',
-                location: currentUserCoords,
-                device_id: userDeviceId
-            };
-
-            const formBody = new URLSearchParams();
-            for (const key in payload) {
-                formBody.append(key, payload[key]);
-            }
-
-            try {
-                console.log("Attempting to send POST request to:", GAS_URL); 
-                const response = await fetch(GAS_URL, 
+        try {
+            console.log("Attempting to send POST request to:", GAS_URL);
+            const response = await fetch(GAS_URL,
                 {
                     method: 'POST',
                     body: formBody
                 });
 
-                console.log("Fetch response status:", response.status);
+            console.log("Fetch response status:", response.status);
 
-                if (!response.ok) 
-                    throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok)
+                throw new Error(`HTTP error! status: ${response.status}`);
 
-                const text = await response.text();
-                let result;
+            const text = await response.text();
+            let result;
 
-                try 
-                {
-                    result = JSON.parse(text); 
-                } 
-                catch (e) 
-                {
-                    console.error("Server Response Text:", text);
-                    throw new Error("Server did not return valid JSON. Check GAS Deployment or code.gs.");
-                }
+            try {
+                result = JSON.parse(text);
+            }
+            catch (e) {
+                console.error("Server Response Text:", text);
+                throw new Error("Server did not return valid JSON. Check GAS Deployment or code.gs.");
+            }
 
-                if (result.status === "success") 
-                {
-                    document.getElementById('main-app-container').classList.add('hidden');
-                    document.getElementById('final-success-container').classList.remove('hidden');
-                } 
-                else if (result.message === "ERROR_TOO_MANY_REQUESTS") 
-                {
-                    updateStatus("เกิดข้อผิดพลาด : คุณส่งข้อมูลถี่เกินไป โปรดลองใหม่ภายหลัง", false, true);
-                    disableAllButtons(false);
-                } 
-                else 
-                    throw new Error(`Server error: ${result.message}`);
-
-            } catch (err) {
-                updateStatus("เกิดข้อผิดพลาดในการส่ง: " + err.message, false, true);
+            if (result.status === "success") {
+                document.getElementById('main-app-container').classList.add('hidden');
+                document.getElementById('final-success-container').classList.remove('hidden');
+            }
+            else if (result.message === "ERROR_TOO_MANY_REQUESTS") {
+                updateStatus("เกิดข้อผิดพลาด : คุณส่งข้อมูลถี่เกินไป โปรดลองใหม่ภายหลัง", false, true);
                 disableAllButtons(false);
             }
-        }
+            else
+                throw new Error(`Server error: ${result.message}`);
 
-        function showFieldError(inputElement) {
-            inputElement.style.borderColor = "var(--error-color)";
-            inputElement.nextElementSibling.style.display = "block"; 
+        } catch (err) {
+            updateStatus("เกิดข้อผิดพลาดในการส่ง: " + err.message, false, true);
+            disableAllButtons(false);
         }
+    }
 
-        function resetErrors(elements) {
-            elements.forEach(el => {
-                el.style.borderColor = "var(--border-color)";
-                if (el.nextElementSibling && el.nextElementSibling.classList.contains('error-text')) {
-                    el.nextElementSibling.style.display = "none";
-                }
-            });
-        }
+    function showFieldError(inputElement) {
+        inputElement.style.borderColor = "var(--error-color)";
+        inputElement.nextElementSibling.style.display = "block";
+    }
 
-        function updateStatus(msg, isSuccess, isError = false) {
-            const statusEl = document.getElementById('form-status');
-            statusEl.textContent = msg;
-            statusEl.className = isSuccess ? 'status-success' : (isError ? 'status-error' : '');
-        }
+    function resetErrors(elements) {
+        elements.forEach(el => {
+            el.style.borderColor = "var(--border-color)";
+            if (el.nextElementSibling && el.nextElementSibling.classList.contains('error-text')) {
+                el.nextElementSibling.style.display = "none";
+            }
+        });
+    }
 
-        function disableAllButtons(disable) {
-            
-            document.querySelectorAll('button').forEach(btn => {
-                if (btn.classList.contains('popup-btn')) {
-                    btn.disabled = false; // keep popup button enabled
-                } else {
-                    btn.disabled = disable;
-                }
-            });
-        }
+    function updateStatus(msg, isSuccess, isError = false) {
+        const statusEl = document.getElementById('form-status');
+        statusEl.textContent = msg;
+        statusEl.className = isSuccess ? 'status-success' : (isError ? 'status-error' : '');
+    }
 
-        function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
-            const R = 6371e3; 
-            const dLat = deg2rad(lat2 - lat1);
-            const dLon = deg2rad(lon2 - lon1);
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
-        }
-        function deg2rad(deg) { return deg * (Math.PI/180); }
+    function disableAllButtons(disable) {
 
-    </script>
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.classList.contains('popup-btn')) {
+                btn.disabled = false; // keep popup button enabled
+            } else {
+                btn.disabled = disable;
+            }
+        });
+    }
+
+    function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
+        const R = 6371e3;
+        const dLat = deg2rad(lat2 - lat1);
+        const dLon = deg2rad(lon2 - lon1);
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+    function deg2rad(deg) { return deg * (Math.PI / 180); }
+
+</script>
 </body>
+
 </html>
